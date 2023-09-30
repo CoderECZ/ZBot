@@ -10,7 +10,7 @@ from main import createProjectDB as cpDB
 app = Flask(__name__)
 
 # SQLite database connection and cursor
-conn = sqlite3.connect("invoices.db")
+conn = sqlite3.connect("database/invoices.db")
 cursor = conn.cursor()
 
 # Create a table to store webhook data
@@ -60,18 +60,18 @@ def api(invoice):
     # Extracting data from the JSON response
     invoice_id = data.get('id')
     status = data.get('status')
-
+    
     detail = data.get('detail', {})
     invoice_number = detail.get('invoice_number')
     reference = detail.get('reference')
     note = detail.get('note')
-
+    
     invoicer = data.get('invoicer', {})
     invoicer_email = invoicer.get('email_address')
     
     amounts = data.get('due_amount', {})
     total = amounts.get('value')
-        
+     
     decodedReference = rnc.decode(reference)
     
     try:
