@@ -45,8 +45,11 @@ def webhook():
     return jsonify({'status': 'success'})
 
 def api(invoice):
+    with open("config.json", "r") as f:
+        config = json.load(f)
+    
     headers = {
-        'Authorization': 'Bearer API_KEY',
+        'Authorization': f"Bearer {config['paypalapi']}",
         'Content-Type': 'application/json',
     }
 
@@ -94,7 +97,7 @@ def discord(invoiceID):
         if developerPay:
             devPayReal = "${:,.2f}".format(developerPay)
     
-    cpDB(ctx='ctx', project_details=desc, game=game, category=category, deadline=deadline, developer_payment=devPayReal)
+    cpDB(ctx='ctx', project_details=desc, game=game, category=category, deadline=deadline, developer_payment=devPayReal, clientID=discord_id)
     
 if __name__ == '__main__':
     app.run(debug=True)

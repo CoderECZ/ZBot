@@ -10,9 +10,8 @@ class TicketSystem(commands.Cog):
     async def on_ready(self):
         print(f'Logged in as {self.bot.user.name}')
 
-    @commands.command()
-    async def openticket(self, ctx, assigned_user_id: int):
-        assigned_user = self.bot.get_user(assigned_user_id)
+    async def create_ticket(self, ctx, pNo: int, pDesc, pDeadline, pClient: int):
+        assigned_user = self.bot.get_user(pClient)
 
         guild = ctx.guild
         category = discord.utils.get(guild.categories, name="Tickets")

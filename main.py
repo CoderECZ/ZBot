@@ -3,8 +3,9 @@ from discord.ext import commands, tasks
 import sqlite3
 import sys
 import os
+import json
 from reference_number_converter import ReferenceNumberConverter as rnc
-from ticket_system import ticket
+from cogs.ticket_system import TicketSystem as Tickets
 
 intents = discord.Intents.all()
 
@@ -39,7 +40,8 @@ cursor.execute('''
         developer_payment REAL,
         deadline TEXT,
         status TEXT,
-        assigned_to INTEGER
+        assigned_to INTEGER,
+        client INTEGER
     )
 ''')
 
@@ -491,15 +493,12 @@ async def ref(ctx):
     reference_number = rnc.encode(service_type, user_id, game, deadline, invoice_number)
     await ctx.author.send(f"Reference Number: {reference_number}")
 
-async def createTicket(ctx, discordUserID, projectID):
-    
-
-async def createProjectDB(ctx, project_details, developer_payment, deadline, game):
+async def createProjectDB(ctx, project_details, developer_payment, deadline, game, clientID):
     # Insert the project into the database
     cursor.execute('''
-        INSERT INTO projects (game, project_details, developer_payment, deadline, status, assigned_to)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', (game.content, project_details.content, float(developer_payment.content), deadline.content, "Unassigned", None))
+        INSERT INTO projects (game, project_details, developer_payment, deadline, status, assigned_to, client)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', (game, project_details, float(developer_payment), deadline, "Unassigned", None, int(clientID)))
     
     conn.commit()
 
@@ -579,7 +578,7 @@ async def claim_project(ctx, project_id: int):
 
 async def send_project_embed(ctx, project_id):
     cursor.execute('''
-        SELECT game, project_details, developer_payment, deadline, status, assigned_to
+        SELECT game, project_details, developer_payment, deadline, status, assigned_to, client
         FROM projects
         WHERE project_id = ?
     ''', (project_id,))
@@ -587,7 +586,7 @@ async def send_project_embed(ctx, project_id):
     project_data = cursor.fetchone()
 
     if project_data:
-        game, project_details, developer_payment, deadline, status, assigned_to = project_data
+        game, project_details, developer_payment, deadline, status, assigned_to, client = project_data
         
         embed = discord.Embed(
             title=f"Project #{project_id}",
@@ -615,6 +614,11 @@ async def send_project_embed(ctx, project_id):
             # If no message exists, send a new one
             project_message = await project_channel.send(embed=embed)
             project_messages[project_id] = project_message
+        
+        try:
+            Tickets.create_ticket(ctx=ctx, pNo=project_id, pDesc=project_details, pClient=client, pDeadline=deadline)
+        except Exception as e:
+            print("Failed to create ticket.")
     else:
         await ctx.send("Project not found.")
 
@@ -974,4 +978,7 @@ async def busy(userID):
     else:
         print("Unable to complete action.")
 
-bot.run('MTA5MzI5MzY3MTQ4MDMwNzc4Ng.GXz3YZ.9vuFMJFLfhAHbtMFoedzc1Atorc_2qNYJH7niI')
+with open("config.json", "r") as f:
+    config = json.load(f)
+    
+bot.run(f"{config['botkey']}")
