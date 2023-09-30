@@ -46,7 +46,7 @@ def webhook():
 
 def api(invoice):
     headers = {
-        'Authorization': 'Bearer zekwhYgsYYI0zDg0p_Nf5v78VelCfYR0',
+        'Authorization': 'Bearer API_KEY',
         'Content-Type': 'application/json',
     }
 

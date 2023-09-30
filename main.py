@@ -4,6 +4,7 @@ import sqlite3
 import sys
 import os
 from reference_number_converter import ReferenceNumberConverter as rnc
+from ticket_system import ticket
 
 intents = discord.Intents.all()
 
@@ -504,7 +505,7 @@ async def createProjectDB(ctx, project_details, developer_payment, deadline, gam
 
     # Send an embed to the specified channel with project details
     project_id = cursor.lastrowid  # Get the ID of the inserted project
-    await send_project_embed(ctx, project_id)
+    await send_project_embed(ctx, project_id=project_id)
 
 @bot.command(name="create_project")
 async def create_project(ctx):
