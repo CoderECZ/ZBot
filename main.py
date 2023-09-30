@@ -11,7 +11,7 @@ intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-conn = sqlite3.connect("database/developers.db")
+conn = sqlite3.connect("data/developers.db")
 cursor = conn.cursor()
 
 # Create the enlistments table if it doesn't exist

@@ -10,7 +10,7 @@ from main import createProjectDB as cpDB
 app = Flask(__name__)
 
 # SQLite database connection and cursor
-conn = sqlite3.connect("database/invoices.db")
+conn = sqlite3.connect("data/invoices.db")
 cursor = conn.cursor()
 
 # Create a table to store webhook data
