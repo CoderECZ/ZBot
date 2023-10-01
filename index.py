@@ -1,5 +1,8 @@
-import discord, sqlite3
+import discord, sqlite3, json
 from discord.ext import commands
+
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 from cogs.ticket_system import TicketSystem 
 from cogs.management_system import ManagementPanel
@@ -9,10 +12,46 @@ from cogs.utilities import Utilites
 from cogs.system import System
 from cogs.invoice import Invoice
 
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="!", intents=intents)
-conn = sqlite3.connect("data/developers.db")
+ticket_system = TicketSystem(bot)
+management_panel = ManagementPanel(bot)
+statuses = Statuses(bot)
+project_management = ProjectManagement(bot)
+utilites = Utilites(bot)
+system = System(bot)
+invoice = Invoice(bot)
+
+bot.add_cog(ticket_system/management_panel/statuses/project_management/utilites/system/invoice)
+
+conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
+
+cursor.executescript('''
+    BEGIN;
+    CREATE TABLE IF NOT EXISTS developers (
+        user_id INTEGER PRIMARY KEY,
+        developer_name TEXT,
+        developer_rank TEXT,
+        status TEXT
+    );
+    CREATE TABLE IF NOT EXISTS certified_roles (
+        developer_id INTEGER,
+        role_name TEXT,
+        FOREIGN KEY (developer_id) REFERENCES developers (user_id)
+    );
+    CREATE TABLE IF NOT EXISTS projects (
+        project_id INTEGER PRIMARY KEY,
+        game TEXT,
+        project_details TEXT,
+        developer_payment REAL,
+        deadline TEXT,
+        status TEXT,
+        assigned_to INTEGER,
+        client INTEGER
+    );
+    COMMIT;
+''')
+
+conn.commit()
 
 @bot.event
 async def on_ready():
@@ -30,21 +69,31 @@ async def on_ready():
             # Fetch the message using the stored message ID
             schedule_message = await schedule_channel.fetch_message(schedule_message_id)
             # Update the embed with the latest information
-            updated_embed = create_schedule_embed()  # Replace with your updated embed creation logic
+            updated_embed = statuses.create_schedule_embed() # Replace with your updated embed creation logic
             await schedule_message.edit(embed=updated_embed)
         except discord.NotFound:
             # The message doesn't exist; create a new one
-            updated_embed = create_schedule_embed()  # Replace with your updated embed creation logic
+            updated_embed = statuses.create_schedule_embed()  # Replace with your updated embed creation logic
             schedule_message = await schedule_channel.send(embed=updated_embed)
             schedule_message_id = schedule_message.id
     else:
         # Schedule message doesn't exist; create a new one
-        updated_embed = create_schedule_embed()  # Replace with your updated embed creation logic
+        updated_embed = statuses.create_schedule_embed()  # Replace with your updated embed creation logic
         schedule_message = await schedule_channel.send(embed=updated_embed)
         schedule_message_id = schedule_message.id
 
     # Start a background task to periodically update the embed
-    update_schedule_embed.start()
+    statuses.update_schedule_embed.start()
+    
     
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="CoderZ code!"))
     print(f'Logged in as {bot.user.name}')
+
+@bot.event
+async def on_message(message):
+    await bot.process_commands(message)
+
+with open('config.json', 'r') as f:
+    config = json.load(f)
+
+bot.run(config['botkey'])

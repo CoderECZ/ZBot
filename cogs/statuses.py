@@ -1,18 +1,24 @@
 import discord, sqlite3
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from cogs.utilities import Utilites
 
-conn = sqlite3.connect("data/developers.db")
+conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
+
+global server_id
 
 class Statuses(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.server_id = 1088951646886842498 # Replace with your server ID
+        self.server_id = 1088951646886842498 
         self.server = bot.get_guild(self.server_id)
     
+    @classmethod
     def create_schedule_embed(self):
+        '''
+        Creates the scheduled embed in the appropriate channel.
+        '''
         # Get a list of developers and their statuses
         cursor.execute('''
             SELECT user_id, status
@@ -54,3 +60,45 @@ class Statuses(commands.Cog):
             embed.add_field(name=developerNick, value=f"➥ {status}", inline=True)
 
         return embed
+
+    @classmethod
+    @tasks.loop(seconds=60)  # Adjust the interval as needed (e.g., update every hour)
+    async def update_schedule_embed(self, name:str):
+        '''
+        Used to update the scheduled embed for the status of developers every 60 seconds.
+        '''
+        global schedule_message_id
+        schedule_channel_id = 1154179596682543125  # Replace with the actual channel ID
+        schedule_channel = self.bot.get_channel(schedule_channel_id)
+
+        try:
+            # Fetch the message using the stored message ID
+            schedule_message = await schedule_channel.fetch_message(schedule_message_id)
+            # Update the embed with the latest information
+            updated_embed = self.create_schedule_embed()  # Replace with your updated embed creation logic
+            await schedule_message.edit(embed=updated_embed)
+        except discord.NotFound:
+            # The message doesn't exist; create a new one
+            updated_embed = self.create_schedule_embed()  # Replace with your updated embed creation logic
+            schedule_message = await schedule_channel.send(embed=updated_embed)
+            schedule_message_id = schedule_message.id
+    
+    @classmethod
+    async def get_status_role(self, server, status_name):
+        rF = await Utilites.rolesF()
+        for role_category in rF:
+            if "statuses" in role_category:
+                statuses = role_category["statuses"]
+                
+                # Check if the status_name exists in the statuses dictionary
+                if status_name in statuses:
+                    # Retrieve the lambda function associated with the status
+                    role_lambda = statuses[status_name]
+                    
+                    # Execute the lambda function to get the role object
+                    role_object = role_lambda(server)  # Replace `server` with your actual server object
+                    
+                    return role_object  # Return the role object
+                else:
+                    return None
+        return None  # Status not found in the dictionaries
