@@ -66,7 +66,4 @@ def api(invoice_no: int):
         Invoice.saveInvoice(data=ProjectDetails)
         
 if __name__ == '__main__':
-    public_url = ngrok.connect(port=4040)
-    print(' * ngrok tunnel "{}" -> "http://127.0.0.1:{}/"'.format(public_url, 4040))
-
-    app.run(port=4040)
+    app.run(debug=True, port=4040)

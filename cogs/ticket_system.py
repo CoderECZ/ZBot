@@ -104,10 +104,12 @@ class TicketSystem(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.channel.category and message.channel.category.name == "Tickets":
+        if isinstance(message.channel, discord.DMChannel):
+            pass
+        elif message.channel.category and message.channel.category.name.lower() == "project tickets":
             self.log_message(message)
-
-        await self.bot.process_commands(message)
+        else:
+            pass
 
     def log_message(self, message):
         with open(f"tickets/{message.channel.name}_log.txt", "a", encoding="utf-8") as file:

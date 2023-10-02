@@ -11,10 +11,11 @@ global server_id
 class Statuses(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.schedule_channel_id = 1154179596682543125
+        self.schedule_message_id = 1158469022216618095
         self.server_id = 1088951646886842498 
         self.server = bot.get_guild(self.server_id)
     
-    @classmethod
     def create_schedule_embed(self):
         '''
         Creates the scheduled embed in the appropriate channel.
@@ -60,20 +61,18 @@ class Statuses(commands.Cog):
             embed.add_field(name=developerNick, value=f"➥ {status}", inline=True)
 
         return embed
-
-    @classmethod
-    @tasks.loop(seconds=60)  # Adjust the interval as needed (e.g., update every hour)
-    async def update_schedule_embed(self, name:str):
+    
+    @tasks.loop(seconds=60)
+    async def update_schedule_embed(self):
         '''
         Used to update the scheduled embed for the status of developers every 60 seconds.
         '''
-        global schedule_message_id
-        schedule_channel_id = 1154179596682543125  # Replace with the actual channel ID
-        schedule_channel = self.bot.get_channel(schedule_channel_id)
+        # Replace with the actual channel ID
+        schedule_channel = self.bot.get_channel(self.schedule_channel_id)
 
         try:
             # Fetch the message using the stored message ID
-            schedule_message = await schedule_channel.fetch_message(schedule_message_id)
+            schedule_message = await schedule_channel.fetch_message(self.schedule_message_id)
             # Update the embed with the latest information
             updated_embed = self.create_schedule_embed()  # Replace with your updated embed creation logic
             await schedule_message.edit(embed=updated_embed)
@@ -81,9 +80,8 @@ class Statuses(commands.Cog):
             # The message doesn't exist; create a new one
             updated_embed = self.create_schedule_embed()  # Replace with your updated embed creation logic
             schedule_message = await schedule_channel.send(embed=updated_embed)
-            schedule_message_id = schedule_message.id
+            schedule_message_id = schedule_message.id  # Assign schedule_message_id here
     
-    @classmethod
     async def get_status_role(self, server, status_name):
         '''Used to retrieve the status role of a user.'''
         rF = await Utilites.rolesF()
@@ -226,8 +224,7 @@ class Statuses(commands.Cog):
                 conn.commit()
         else:
             await ctx.author.send("You are not registered as a developer. Please use the `register_developer` command first.")
-
-    @classmethod
+    
     async def busy(self, userID):
         '''Used to set a user's status to busy.'''
         member = self.server.get_member(userID)

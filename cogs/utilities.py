@@ -5,6 +5,9 @@ conn = sqlite3.connect("data/developers.db")
 cursor = conn.cursor()
 
 class Utilites(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        
     SERVICE_TYPES = {
         'a': 'Web Development',
         'b': 'Server Configuration',
@@ -25,8 +28,6 @@ class Utilites(commands.Cog):
         'x': 'Other',
     }
     
-    def __init__(self, bot):
-        self.bot = bot
     
     @classmethod
     def user_nickname(self, user_id: int, guild: discord.Guild):
@@ -84,7 +85,6 @@ class Utilites(commands.Cog):
             ''', (developer_id, lowercase_role_name))
             conn.commit()
     
-    @classmethod
     async def rolesF(self, server):
         '''A list of all of the ranks, certifications and statuses within the server.'''
         rF = {
@@ -156,8 +156,7 @@ class Utilites(commands.Cog):
             'Deadline': deadline,
             'Invoice No': invoice_no,
         }
-    
-    @classmethod
+        
     @commands.command(name="ref")
     async def ref(self, ctx):
         '''Builds a reference number using Utilities.encode()'''

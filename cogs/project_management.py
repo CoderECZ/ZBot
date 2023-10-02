@@ -13,7 +13,6 @@ class ProjectManagement(commands.Cog):
         self.project_messages = {}
     
     @commands.command(name="create_project")
-    @commands.has_permissions('Administrator')
     async def create_project(self, ctx):
         def check(message):
             return message.author == ctx.author and isinstance(message.channel, discord.DMChannel)
