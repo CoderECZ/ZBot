@@ -1,10 +1,30 @@
-import discord, sqlite3
+import discord, sqlite3, string
 from discord.ext import commands
 
 conn = sqlite3.connect("data/developers.db")
 cursor = conn.cursor()
 
 class Utilites(commands.Cog):
+    SERVICE_TYPES = {
+        'a': 'Web Development',
+        'b': 'Server Configuration',
+        'c': 'Mod Configuration',
+        'd': 'JSON',
+        'e': 'Map Development',
+        'f': '3D Modelling/Texturing',
+        'g': 'Bot Development',
+        'h': 'Scripting',
+        'i': 'Catalog/Pre-made',
+        'x': 'Other',
+    }
+
+    GAMES = {
+        'a': 'DayZ',
+        'b': 'Arma',
+        'c': 'Discord',
+        'x': 'Other',
+    }
+    
     def __init__(self, bot):
         self.bot = bot
     
@@ -65,40 +85,70 @@ class Utilites(commands.Cog):
             conn.commit()
     
     @classmethod
-    async def rolesF(self):
-        rF = [
-            {
-                "ranks": {
-                    "Chief Executive Officer": lambda server: discord.utils.get(server.roles, name="Chief Executive Officer"),
-                    "Chief Operations Officer": lambda server: discord.utils.get(server.roles, name="Chief Operations Officer"),
-                    "Account Executive": lambda server: discord.utils.get(server.roles, name="Account Executive"),
-                    "Developer": lambda server: discord.utils.get(server.roles, name="Developer"),
-                    "Staff": lambda server: discord.utils.get(server.roles, name="Staff"),
-                    "Sales Representative": lambda server: discord.utils.get(server.roles, name="Sales Representative"),
-                },
+    async def rolesF(self, server):
+        rF = {
+            "ranks": {
+                "Chief Executive Officer": discord.utils.get(server.roles, name="Chief Executive Officer"),
+                "Chief Operations Officer": discord.utils.get(server.roles, name="Chief Operations Officer"),
+                "Account Executive": discord.utils.get(server.roles, name="Account Executive"),
+                "Developer": discord.utils.get(server.roles, name="Developer"),
+                "Staff": discord.utils.get(server.roles, name="Staff"),
+                "Sales Representative": discord.utils.get(server.roles, name="Sales Representative"),
             },
-            {
-                "certs": {
-                    "JSON Creator": lambda server: discord.utils.get(server.roles, name="JSON Creator"),
-                    "Server Configuration": lambda server: discord.utils.get(server.roles, name="Server Configuration"),
-                    "Script Developer": lambda server: discord.utils.get(server.roles, name="Script Developer"),
-                    "3D Modelling Engineer": lambda server: discord.utils.get(server.roles, name="3D Modelling Engineer"),
-                    "Web Developer": lambda server: discord.utils.get(server.roles, name="Web Developer"),
-                    "Bot Developer": lambda server: discord.utils.get(server.roles, name="Bot Developer"),
-                    "Social Media Engineer": lambda server: discord.utils.get(server.roles, name="Social Media Engineer"),
-                    "Map Developer": lambda server: discord.utils.get(server.roles, name="Map Developer"), 
-                    "Mod Technician": lambda server: discord.utils.get(server.roles, name="Mod Technician"),
-                    "Technical Administrator": lambda server: discord.utils.get(server.roles, name="Technical Administrator")
-                },
+            "certs": {
+                "JSON Creator": discord.utils.get(server.roles, name="JSON Creator"),
+                "Server Configuration": discord.utils.get(server.roles, name="Server Configuration"),
+                "Script Developer": discord.utils.get(server.roles, name="Script Developer"),
+                "3D Modelling Engineer": discord.utils.get(server.roles, name="3D Modelling Engineer"),
+                "Web Developer": discord.utils.get(server.roles, name="Web Developer"),
+                "Bot Developer": discord.utils.get(server.roles, name="Bot Developer"),
+                "Social Media Engineer": discord.utils.get(server.roles, name="Social Media Engineer"),
+                "Map Developer": discord.utils.get(server.roles, name="Map Developer"), 
+                "Mod Technician": discord.utils.get(server.roles, name="Mod Technician"),
+                "Technical Administrator": discord.utils.get(server.roles, name="Technical Administrator")
             },
-            {
-                "statuses": {
-                    "Available": lambda server: discord.utils.get(server.roles, name="Available"),
-                    "Unavailable": lambda server: discord.utils.get(server.roles, name="Unavailable"),
-                    "onBreak": lambda server: discord.utils.get(server.roles, name="On Break"),
-                    "Busy": lambda server: discord.utils.get(server.roles, name="Busy"),
-                },
+            "statuses": {
+                "Available": discord.utils.get(server.roles, name="Available"),
+                "Unavailable": discord.utils.get(server.roles, name="Unavailable"),
+                "onBreak": discord.utils.get(server.roles, name="On Break"),
+                "Busy": discord.utils.get(server.roles, name="Busy"),
             },
-        ]
-        
+        }
+
         return rF
+    
+    @classmethod
+    def generate_project_number(self, base_number, index):
+        alphabet = string.ascii_lowercase
+        suffix = alphabet[index % len(alphabet)]
+        return f"{base_number:04d}{suffix}"
+    
+    @classmethod
+    def encode(self, service_type, discord_id, game, deadline, invoice_no):
+        
+        service_encode = self.SERVICE_TYPES.get(service_type)
+        game_encode = self.GAMES.get(game[0])
+        
+        return f'{service_encode}{discord_id}{game_encode}{deadline}{invoice_no}'
+
+    @classmethod
+    def decode(self, reference_number):
+        if len(reference_number) != 21:
+            return None  # Invalid reference number length
+
+        service_type = self.SERVICE_TYPES.get(reference_number[0])
+        discord_id = reference_number[1:19]
+        game = self.GAMES.get(reference_number[19])
+        deadline = reference_number[20:28]
+        invoice_no = reference_number[28:]
+
+        if not service_type or not game:
+            return None  # Invalid service type or game code
+
+        return {
+            'Service Type': service_type,
+            'Discord ID': discord_id,
+            'Game': game,
+            'Deadline': deadline,
+            'Invoice No': invoice_no,
+        }

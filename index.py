@@ -39,7 +39,7 @@ cursor.executescript('''
         FOREIGN KEY (developer_id) REFERENCES developers (user_id)
     );
     CREATE TABLE IF NOT EXISTS projects (
-        project_id INTEGER PRIMARY KEY,
+        project_id TEXT PRIMARY KEY,
         game TEXT,
         project_details TEXT,
         developer_payment REAL,

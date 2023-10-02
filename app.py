@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 from pyngrok import ngrok
 import requests, json
 
+from cogs.invoice import Invoice
+from cogs.utilities import Utilites
+
 # Receives the webhook from PayPal and then redirects it to the bot via a webhook
 
 app = Flask(__name__)
@@ -9,13 +12,14 @@ app = Flask(__name__)
 with open('config.json', "r") as f:
     config = json.load(f)
 
-webhookClient = 'https://discord.com/api/webhooks/id/token'
-webhookClient = {
-    'id': "id",
-    'token': "token"
+headers = {
+    'Authorization': f'Bearer {config["paypalapi"]}',
+    'Content-Type': 'application/json',
 }
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    '''Receives webhooks from PayPal.'''
     # Get PayPal webhook data
     data = json.loads(request.get_data(as_text=True))
 
@@ -25,18 +29,42 @@ def webhook():
         invoice_no = data['resource']['number']
     
     print(invoice_no)
-    return jsonify({'status': 'success'})
+    api(invoice_no)
 
-@app.route('/forward', methods=['POST'])
-def forward_to_webhook():
-    try:
-        data = request.get_json()
-        response = requests.post(WEBHOOK_URL, json=data)
-        print(response.text)
-        return jsonify({"message": "Request forwarded to webhook", "response": response.text}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+def api(invoice_no: int):
+    '''Processes the invoice number and fetches the full invoice details from PayPal, processes the JSON payload for use in further functions.'''
+    response = requests.get(f'https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_no}', headers=headers)
 
+    data = response.json()
+    
+    status = data.get('status')
+    detail = data.get('detail', {}) # Inside data container
+    invoice_number = detail.get('invoice_number')
+    reference = detail.get('reference')
+    invoicer = data.get('invoicer', {}) # Inside the invoicer container
+    invoicer_email = invoicer.get('email_address')
+    items = data.get('items', [])
+    for index, item in enumerate(items):
+        item_name = item.get('name')
+        item_description = item.get('description')
+        item_quantity = item.get('quantity')
+        item_unit_amount = item.get('unit_amount', {}).get('value')
+        item_tax = item.get('tax', {}).get('amount', {}).get('value')
+        item_discount = item.get('discount', {}).get('amount', {}).get('value')
+
+        # Generate a unique project number for each item
+        project_number = Utilites.generate_project_number(int(invoice_number), index)
+        
+        ProjectDetails: {
+            "Status": status,
+            "Invoice Number": project_number,
+            "Reference Number": reference,
+            "Email Address": invoicer_email,
+            "Items": [item_name, item_description, item_unit_amount],
+        }
+
+        Invoice.saveInvoice(data=ProjectDetails)
+        
 if __name__ == '__main__':
     public_url = ngrok.connect(port=4040)
     print(' * ngrok tunnel "{}" -> "http://127.0.0.1:{}/"'.format(public_url, 4040))
