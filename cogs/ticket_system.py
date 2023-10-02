@@ -1,22 +1,83 @@
-import discord
+import discord, sqlite3
 from discord.ext import commands
 
 class TicketSystem(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.LOG_CHANNEL_ID = 123456789012345678  # Replace with your log channel ID
 
     @commands.Cog.listener()
     async def on_ready(self):
         print(f'Logged in as {self.bot.user.name}')
+    
+    async def add_developer(self, ctx, developer_id: int):
+        '''Adds a developer to a project ticket.'''
+        guild = ctx.guild
+        assigned_user_id = None
 
-    async def create_ticket(self, ctx, pNo: int, pDesc, pDeadline, pClient: int):
+        # Get the assigned user ID from channel overwrites
+        for overwrite in ctx.channel.overwrites:
+            if overwrite[0].id != ctx.guild.id:
+                assigned_user_id = overwrite[0].id
+                break
+
+        if assigned_user_id:
+            assigned_user = guild.get_member(assigned_user_id)
+            developer = guild.get_member(developer_id)
+
+            if developer and assigned_user:
+                # Update channel overwrites to allow only the assigned user and the added developer to read messages
+                overwrites = {
+                    guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                    guild.me: discord.PermissionOverwrite(read_messages=True),
+                    assigned_user: discord.PermissionOverwrite(read_messages=True),
+                    developer: discord.PermissionOverwrite(read_messages=True),
+                }
+
+                await ctx.channel.edit(overwrites=overwrites)
+
+                # Send an embed indicating the developer has been added
+                embed = discord.Embed(
+                    title="Developer Assigned!",
+                    description=f"{developer.mention} has been added to your ticket!\n\n"
+                                f"They will help get your project complete in no time!\n"
+                                f"Please let them know any information they request regarding your project, this helps them get it done super quick!",
+                    color=0x00ff00
+                )
+                await ctx.channel.send(embed=embed)
+
+            else:
+                await ctx.send("Invalid developer or assigned user.")
+        else:
+            await ctx.send("Assigned user not found.")
+    
+    @classmethod
+    @commands.command(name="close_ticket")
+    async def close_ticket(self, ctx, channel_name: str = None):
+        '''Closes the current project ticket.'''
+        if channel_name == None:
+            if ctx.channel.category and ctx.channel.category.name.lower() == "project tickets":
+                await ctx.channel.delete()
+                await ctx.send("Ticket closed successfully.")
+        elif channel_name is not None:
+            # Try to get the channel by name
+            channel_to_close = discord.utils.get(ctx.guild.channels, name=channel_name)
+            
+            if channel_to_close and channel_to_close.category.name.lower() == "project tickets":
+                await channel_to_close.delete()
+                await ctx.send(f"Ticket '{channel_name}' closed successfully.")
+            else:
+                await ctx.send(f"Channel '{channel_name}' not found or not in 'Project Tickets' category.")
+        else:
+            await ctx.send("This command can only be used in a ticket channel.")
+
+    async def create_ticket(self, ctx, pNo, pDesc, pDeadline, pClient: int):
+        '''Creates a ticket for projects when they have been initiated.'''
         assigned_user = self.bot.get_user(pClient)
 
         guild = ctx.guild
-        category = discord.utils.get(guild.categories, name="Tickets")
+        category = discord.utils.get(guild.categories, name="project tickets")
         if category is None:
-            category = await guild.create_category("Tickets")
+            category = await guild.create_category("project tickets")
 
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(read_messages=False),
@@ -25,11 +86,15 @@ class TicketSystem(commands.Cog):
             assigned_user: discord.PermissionOverwrite(read_messages=True),
         }
 
-        ticket_channel = await category.create_text_channel(f"ticket-{ctx.author.name}", overwrites=overwrites)
+        ticket_channel = await category.create_text_channel(f"ticket-{pNo}", overwrites=overwrites)
 
         embed = discord.Embed(
-            title="Ticket Information",
-            description="Ticket has been opened.",
+            title=f"Project {pNo}",
+            description=f"This is the beginning of your project with CoderZ!\n"
+                        f"Please send all information regarding your project here!\n"
+                        f"Our VCs are also open for project discussion!\n\n"
+                        f"**Project Description**: {pDesc}"
+                        f"**Project Deadline:** {pDeadline}",
             color=0x00ff00
         )
 
@@ -41,26 +106,9 @@ class TicketSystem(commands.Cog):
     async def on_message(self, message):
         if message.channel.category and message.channel.category.name == "Tickets":
             self.log_message(message)
-            await self.send_to_assigned_user(message)
-            await self.send_to_log_channel(message)
 
         await self.bot.process_commands(message)
 
-    async def send_to_assigned_user(self, message):
-        assigned_user = None
-        for overwrite in message.channel.overwrites:
-            if overwrite[0].id != message.guild.id:
-                assigned_user = message.guild.get_member(overwrite[0].id)
-                break
-
-        if assigned_user:
-            await assigned_user.send(f"New message in your ticket ({message.channel.mention}): {message.content}")
-
-    async def send_to_log_channel(self, message):
-        log_channel = message.guild.get_channel(self.LOG_CHANNEL_ID)
-        if log_channel:
-            await log_channel.send(f"{message.author.name}: {message.content}")
-
     def log_message(self, message):
-        with open(f"{message.channel.name}_log.txt", "a", encoding="utf-8") as file:
+        with open(f"tickets/{message.channel.name}_log.txt", "a", encoding="utf-8") as file:
             file.write(f"{message.author.name}: {message.content}\n")

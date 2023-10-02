@@ -4,7 +4,6 @@ import sqlite3
 import sys
 import os
 import json
-from reference_number_converter import ReferenceNumberConverter as rnc
 from cogs.ticket_system import TicketSystem as Tickets
 
 intents = discord.Intents.all()
@@ -489,9 +488,6 @@ async def ref(ctx):
     game = g.content
     deadline = d.content
     invoice_number = i.content
-
-    reference_number = rnc.encode(service_type, user_id, game, deadline, invoice_number)
-    await ctx.author.send(f"Reference Number: {reference_number}")
 
 async def createProjectDB(ctx, project_details, developer_payment, deadline, game, clientID):
     # Insert the project into the database

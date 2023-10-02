@@ -85,6 +85,7 @@ class Statuses(commands.Cog):
     
     @classmethod
     async def get_status_role(self, server, status_name):
+        '''Used to retrieve the status role of a user.'''
         rF = await Utilites.rolesF()
         for role_category in rF:
             if "statuses" in role_category:
@@ -102,3 +103,165 @@ class Statuses(commands.Cog):
                 else:
                     return None
         return None  # Status not found in the dictionaries
+
+    @commands.command(name="available")
+    async def available(self, ctx):
+        '''Become available for projects and general CoderZ activities.'''
+        member = self.server.get_member(ctx.author.id)
+        available_role = discord.utils.get(self.server.roles, name="Available")
+        unavailable_role = discord.utils.get(self.server.roles, name="Unavailable")
+        onBreak_role = discord.utils.get(self.server.roles, name="On Break")
+        
+        cursor.execute("SELECT status FROM developers WHERE user_id=?", (ctx.author.id,))
+        status_tuple = cursor.fetchone()  # Fetch the status from the database
+        
+        if status_tuple:
+            status = status_tuple[0]  # Extract the status from the tuple
+            try:
+                if status.lower() == "unavailable":
+                    await member.remove_roles(unavailable_role)
+                elif status.lower() == "onbreak":
+                    await member.remove_roles(onBreak_role)
+                elif status.lower() == "available":
+                    await ctx.author.send("You already have your status as available.")
+            except Exception as e:
+                print(f"Failed to assign status: {e}")
+                await ctx.author.send("There was an error when attempting to assign your role, please contact a technical administrator.")
+            else:
+                try:
+                    await member.add_roles(available_role)
+                except Exception as e:
+                    print(f"Failed to add role to user: {e}")
+                    
+                await ctx.author.send("Your status has been updated to available.")
+                
+                cursor.execute('''
+                    UPDATE developers
+                    SET status = ?
+                    WHERE user_id = ?
+                ''', ("available", ctx.author.id))
+                
+                conn.commit()
+        else:
+            await ctx.author.send("You are not registered as a developer. Please use the `register_developer` command first.")
+
+    @commands.command(name="unavailable")
+    async def unavailable(self, ctx):
+        '''Become unavailable for projects and general CoderZ activities.'''
+        member = self.server.get_member(ctx.author.id)
+        available_role = discord.utils.get(self.server.roles, name="Available")
+        unavailable_role = discord.utils.get(self.server.roles, name="Unavailable")
+        onBreak_role = discord.utils.get(self.server.roles, name="On Break")
+        
+        cursor.execute("SELECT status FROM developers WHERE user_id=?", (ctx.author.id,))
+        status_tuple = cursor.fetchone()  # Fetch the status from the database
+        
+        if status_tuple:
+            status = status_tuple[0]  # Extract the status from the tuple
+            try:
+                if status.lower() == "available":
+                    await member.remove_roles(available_role)
+                elif status.lower() == "onbreak":
+                    await member.remove_roles(onBreak_role)
+                elif status.lower() == "unavailable":
+                    await ctx.author.send("You already have your status as unavailable.")
+            except Exception as e:
+                print(f"Failed to assign status: {e}")
+                await ctx.author.send("There was an error when attempting to assign your role, please contact a technical administrator.")
+            else:
+                try:
+                    await member.add_roles(unavailable_role)
+                except Exception as e:
+                    print(f"Failed to add role to user: {e}")
+                    
+                await ctx.author.send("Your status has been updated to unavailable.")
+                
+                cursor.execute('''
+                    UPDATE developers
+                    SET status = ?
+                    WHERE user_id = ?
+                ''', ("unavailable", ctx.author.id))
+                
+                conn.commit()
+        else:
+            await ctx.author.send("You are not registered as a developer. Please use the `register_developer` command first.")
+
+    @commands.command(name="onBreak")
+    async def onBreak(self, ctx):
+        '''Go on leave or take a break from projects and general CoderZ activities.'''
+        member = self.server.get_member(ctx.author.id)
+        available_role = discord.utils.get(self.server.roles, name="Available")
+        unavailable_role = discord.utils.get(self.server.roles, name="Unavailable")
+        onBreak_role = discord.utils.get(self.server.roles, name="On Break")
+        
+        cursor.execute("SELECT status FROM developers WHERE user_id=?", (ctx.author.id,))
+        status_tuple = cursor.fetchone()  # Fetch the status from the database
+        
+        if status_tuple:
+            status = status_tuple[0]  # Extract the status from the tuple
+            try:
+                if status.lower() == "unavailable":
+                    await member.remove_roles(unavailable_role)
+                elif status.lower() == "available":
+                    await member.remove_roles(available_role)
+                elif status.lower() == "onbreak":
+                    await ctx.author.send("You already have your status as on break.")
+            except Exception as e:
+                print(f"Failed to assign status: {e}")
+                await ctx.author.send("There was an error when attempting to assign your role, please contact a technical administrator.")
+            else:
+                try:
+                    await member.add_roles(onBreak_role)
+                except Exception as e:
+                    print(f"Failed to add role to user: {e}")
+                    
+                await ctx.author.send("Your status has been updated to on break.")
+                
+                cursor.execute('''
+                    UPDATE developers
+                    SET status = ?
+                    WHERE user_id = ?
+                ''', ("onbreak", ctx.author.id))
+                
+                conn.commit()
+        else:
+            await ctx.author.send("You are not registered as a developer. Please use the `register_developer` command first.")
+
+    @classmethod
+    async def busy(self, userID):
+        '''Used to set a user's status to busy.'''
+        member = self.server.get_member(userID)
+        available_role = discord.utils.get(self.server.roles, name="Available")
+        unavailable_role = discord.utils.get(self.server.roles, name="Unavailable")
+        onBreak_role = discord.utils.get(self.server.roles, name="On Break")
+        busy_role = discord.utils.get(self.server.roles, name="Busy")
+        
+        cursor.execute("SELECT status FROM developers WHERE user_id=?", (userID,))
+        status_tuple = cursor.fetchone()  # Fetch the status from the database
+        
+        if status_tuple:
+            status = status_tuple[0]  # Extract the status from the tuple
+            try:
+                if status.lower() == "unavailable":
+                    await member.remove_roles(unavailable_role)
+                elif status.lower() == "available":
+                    await member.remove_roles(available_role)
+                elif status.lower() == "onbreak":
+                    await member.remove_roles(onBreak_role)
+            except Exception as e:
+                print(f"Failed to assign status: {e}")
+            else:
+                try:
+                    await member.add_roles(busy_role)
+                except Exception as e:
+                    print(f"Failed to add role to user: {e}")
+                
+                cursor.execute('''
+                    UPDATE developers
+                    SET status = ?
+                    WHERE user_id = ?
+                ''', ("busy", userID))
+                
+                conn.commit()
+        else:
+            print("Unable to complete action.")

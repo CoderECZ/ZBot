@@ -1,4 +1,4 @@
-import discord, sqlite3, json
+import discord, sqlite3, json, tqdm
 from discord.ext import commands
 
 intents = discord.Intents.all()
@@ -47,6 +47,11 @@ cursor.executescript('''
         status TEXT,
         assigned_to INTEGER,
         client INTEGER
+    );
+    CREATE TABLE IF NOT EXISTS completed_projects (
+        developer_id INTEGER PRIMARY KEY,
+        project_id TEXT,
+        developer_payment REAL
     );
     COMMIT;
 ''')

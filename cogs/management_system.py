@@ -258,3 +258,64 @@ class ManagementPanel(commands.Cog):
             except Exception as e:
                 await ctx.author.send("Failed to fetch developers current status.")
                 print(f"Error retrieving information from database: {e}")
+    
+    @commands.command(name="register_developer")
+    async def register_developer(self, ctx):
+        '''Register a developer in CoderZ!'''
+        # Initialize an empty list to store certifications
+        certifications = []
+        
+        def check(message):
+            return message.author == ctx.author and isinstance(message.channel, discord.DMChannel)
+        
+        await ctx.author.send("What is the user ID of the developer who you are registering?")
+        
+        # Wait for the user's response
+        r = await self.bot.wait_for("message", check=check, timeout=120)
+        userID = r.content
+        
+        await ctx.author.send("What is the developer's name?\nE.g., Breath, Omni, Danny")
+        
+        # Wait for the user's response
+        r = await self.bot.wait_for("message", check=check, timeout=120)
+        developerName = r.content
+        
+        await ctx.author.send("What is the developer's rank?")
+        
+        # Wait for the user's response
+        r = await self.bot.wait_for("message", check=check, timeout=120)
+        developerRank = r.content
+        
+        await ctx.author.send("Enter the certifications one at a time. Type 'stop' to finish.")
+        
+        while True:
+            # Wait for the user's response
+            r = await self.bot.wait_for("message", check=check, timeout=120)
+            
+            # Check if the user wants to stop
+            if r.content.lower() == "stop":
+                break
+            
+            # Add the certification to the list
+            certifications.append(r.content)
+        
+        try:
+            cursor.execute('''
+                INSERT INTO developers (user_id, developer_name, developer_rank, status)
+                VALUES (?, ?, ?, ?)
+            ''', (userID, developerName, developerRank, "available"))
+            
+            developer_id = cursor.lastrowid  # Get the ID of the inserted developer
+            
+            # Insert certifications into the certified_roles table
+            for certification in certifications:
+                cursor.execute('''
+                    INSERT INTO certified_roles (developer_id, role_name)
+                    VALUES (?, ?)
+                ''', (developer_id, certification))
+            
+            conn.commit()
+            await ctx.author.send(f"Developer {developerName} ({userID}) has been registered with rank {developerRank} and certifications: {', '.join(certifications)}")
+        except sqlite3.Error as e:
+            ctx.author.send("Error saving information to the database.")
+            print(f"Error saving data to DB: {e}")

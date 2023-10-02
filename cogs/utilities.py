@@ -86,6 +86,7 @@ class Utilites(commands.Cog):
     
     @classmethod
     async def rolesF(self, server):
+        '''A list of all of the ranks, certifications and statuses within the server.'''
         rF = {
             "ranks": {
                 "Chief Executive Officer": discord.utils.get(server.roles, name="Chief Executive Officer"),
@@ -119,12 +120,14 @@ class Utilites(commands.Cog):
     
     @classmethod
     def generate_project_number(self, base_number, index):
+        '''Generates a project number with a alphabetical number for multi-project orders.'''
         alphabet = string.ascii_lowercase
         suffix = alphabet[index % len(alphabet)]
         return f"{base_number:04d}{suffix}"
     
     @classmethod
     def encode(self, service_type, discord_id, game, deadline, invoice_no):
+        '''Encodes a reference number for use in an invoice/project.'''
         
         service_encode = self.SERVICE_TYPES.get(service_type)
         game_encode = self.GAMES.get(game[0])
@@ -133,6 +136,7 @@ class Utilites(commands.Cog):
 
     @classmethod
     def decode(self, reference_number):
+        '''Decodes a reference number into a dictionary of values: Service Type, Discord ID, Game, Deadline and Invoice/Project Number.'''
         if len(reference_number) != 21:
             return None  # Invalid reference number length
 
@@ -152,3 +156,54 @@ class Utilites(commands.Cog):
             'Deadline': deadline,
             'Invoice No': invoice_no,
         }
+    
+    @classmethod
+    @commands.command(name="ref")
+    async def ref(self, ctx):
+        '''Builds a reference number using Utilities.encode()'''
+        def check(message):
+            return message.author == ctx.author and isinstance(message.channel, discord.DMChannel)
+
+        await ctx.author.send("What is the service type?\n\n> 1 | Web Development\n> 2 | Server Configuration\n> 3 | Mod Configuration\n> 4 | JSON\n> 5 | Map Development\n> 6 | 3D Modelling (Texturing, Rigging, Animations...)\n> 7 | Bot Development\n> 8 | Scripting\n> 9 | Catalog\n> 10 | Other")
+
+        def validate_service_type(message):
+            return check(message) and message.content.isdigit() and 1 <= int(message.content) <= 10
+
+        t = await self.bot.wait_for("message", timeout=120, check=validate_service_type)
+
+        await ctx.author.send("What is the user's Discord ID?\n[How to get a user's Discord ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)")
+
+        def validate_user_id(message):
+            return check(message) and message.content.isdigit()  # You can add more specific validation if needed
+
+        u = await self.bot.wait_for("message", timeout=120, check=validate_user_id)
+
+        await ctx.author.send("What game is it for?\n\n> 1 | DayZ\n> 2 | Arma\n> 3 | Discord\n> 4 | Other")
+
+        def validate_game(message):
+            return check(message) and message.content.isdigit() and 1 <= int(message.content) <= 4
+
+        g = await self.bot.wait_for("message", timeout=120, check=validate_game)
+
+        await ctx.author.send("What is the deadline for the project?\n\nIn this format specifically: DDMMYYYY")
+
+        def validate_deadline(message):
+            return check(message) and len(message.content) == 8 and message.content.isdigit()
+
+        d = await self.bot.wait_for("message", timeout=120, check=validate_deadline)
+
+        await ctx.author.send("What is the invoice number?")
+
+        def validate_invoice_number(message):
+            return check(message) and message.content.isdigit()  # You can add more specific validation if needed
+
+        i = await self.bot.wait_for("message", timeout=120, check=validate_invoice_number)
+        
+        service_type = t.content
+        user_id = u.content
+        game = g.content
+        deadline = d.content
+        invoice_number = i.content
+
+        reference_number = self.encode(service_type, user_id, game, deadline, invoice_number)
+        await ctx.author.send(f"Reference Number: {reference_number}")
