@@ -1,6 +1,6 @@
 # ZBot - Discord Bot for Project Management and Developer Collaboration
 
-![ZBot Logo]([link_to_your_logo.png](https://cdn.discordapp.com/attachments/1114686704658423848/1157276152642146365/Picsart_23-09-17_19-07-53-355-removebg-preview.png?ex=651d4ae7&is=651bf967&hm=bd25b56a7eebb99968650aaf2fe19bb0b204b29d5eed211e7766b65d198cd36c&))
+![ZBot Logo](logo.png))
 
 ZBot is a versatile Discord bot designed to streamline project management, ticketing, developer collaboration, and more. It comes with a set of features tailored to enhance your server's productivity and organization.
 
