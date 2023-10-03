@@ -17,6 +17,9 @@ headers = {
     'Content-Type': 'application/json',
 }
 
+ngrok_url = ngrok.connect(5000)
+paypal_webhook_url = str(ngrok_url).replace('http', 'https') + "/webhook"
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     '''Receives webhooks from PayPal.'''
@@ -25,11 +28,11 @@ def webhook():
 
     # Extract specific data from the invoice payload
     if 'resource' in data and data['resource_type'] == 'invoices':
-        
         invoice_no = data['resource']['number']
-    
-    print(invoice_no)
-    api(invoice_no)
+        print(invoice_no)
+        api(invoice_no)
+
+    return '', 200  # Return a 200 OK response to PayPal
 
 def api(invoice_no: int):
     '''Processes the invoice number and fetches the full invoice details from PayPal, processes the JSON payload for use in further functions.'''
@@ -40,7 +43,7 @@ def api(invoice_no: int):
     status = data.get('status')
     detail = data.get('detail', {}) # Inside data container
     invoice_number = detail.get('invoice_number')
-    reference = detail.get('reference')
+    reference = detail.get('memo')
     invoicer = data.get('invoicer', {}) # Inside the invoicer container
     invoicer_email = invoicer.get('email_address')
     items = data.get('items', [])
@@ -65,5 +68,11 @@ def api(invoice_no: int):
 
         Invoice.saveInvoice(data=ProjectDetails)
         
+print(paypal_webhook_url)
+        
 if __name__ == '__main__':
-    app.run(debug=True, port=4040)
+    try:
+        app.run(debug=True)
+    except KeyboardInterrupt:
+        print("Shutting down ngrok...")
+        ngrok.kill()
