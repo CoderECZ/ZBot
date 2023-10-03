@@ -18,7 +18,7 @@ headers = {
 }
 
 ngrok_url = ngrok.connect(5000)
-paypal_webhook_url = str(ngrok_url).replace('http', 'https') + "/webhook"
+paypal_webhook_url = str(ngrok_url) + "/webhook"
 
 @app.route('/webhook', methods=['POST'])
 def webhook():

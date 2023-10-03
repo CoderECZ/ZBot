@@ -1,2 +1,12 @@
 2023-10-03 21:21:09,609 - INFO - 2023-10-03 20:21:09 UTC - Command 'register_developer' invoked by lunafy in Coder'Z Expert'Z & Custom'Z#bot-commands
 2023-10-03 21:21:10,052 - INFO - 2023-10-03 20:21:10 UTC - Command 'register_developer' invoked by lunafy in Coder'Z Expert'Z & Custom'Z#bot-commands - Error: Command raised an exception: Forbidden: 403 Forbidden (error code: 50007): Cannot send messages to this user
+2023-10-03 21:21:34,972 - INFO - 2023-10-03 20:21:34 UTC - Command 'register_developer' invoked by lunafy in Coder'Z Expert'Z & Custom'Z#bot-commands
+2023-10-03 21:21:59,371 - INFO - 2023-10-03 20:21:59 UTC - Command 'register_developer' invoked by breathdev in Coder'Z Expert'Z & Custom'Z#bot-commands
+2023-10-03 21:23:18,980 - INFO - 2023-10-03 20:23:18 UTC - Command 'available' invoked by lunafy in Coder'Z Expert'Z & Custom'Z#bot-commands
+2023-10-03 21:24:11,301 - INFO - 2023-10-03 20:24:11 UTC - Command 'admin_manage' invoked by breathdev in Coder'Z Expert'Z & Custom'Z#bot-commands
+2023-10-03 21:24:11,301 - INFO - 2023-10-03 20:24:11 UTC - Command 'admin_manage' invoked by breathdev in Coder'Z Expert'Z & Custom'Z#bot-commands - Error: userID is a required argument that is missing.
+2023-10-03 21:24:39,510 - INFO - 2023-10-03 20:24:39 UTC - Command 'admin_manage' invoked by breathdev in Coder'Z Expert'Z & Custom'Z#bot-commands
+2023-10-03 21:40:15,178 - INFO - 2023-10-03 20:40:15 UTC - Command 'available' invoked by breathdev in Coder'Z Expert'Z & Custom'Z#bot-commands
+2023-10-03 21:51:18,713 - INFO - 2023-10-03 20:51:18 UTC - Command 'register_developer' invoked by Luckypunck in Coder'Z Expert'Z & Custom'Z#bot-commands
+2023-10-03 21:51:28,806 - INFO - 2023-10-03 20:51:28 UTC - Command 'available' invoked by Luckypunck in Coder'Z Expert'Z & Custom'Z#bot-commands
+2023-10-03 21:53:19,553 - INFO - 2023-10-03 20:53:19 UTC - Command 'register_developer' invoked by Luckypunck in Coder'Z Expert'Z & Custom'Z#bot-commands - Error: Command raised an exception: TimeoutError: 
