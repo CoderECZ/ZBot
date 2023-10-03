@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 import sqlite3
 import json
 
@@ -13,6 +13,7 @@ from cogs.project_management import ProjectManagement
 from cogs.utilities import Utilites
 from cogs.system import System
 from cogs.invoice import Invoice
+from cogs.logging import Logging
 
 conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
@@ -51,7 +52,7 @@ cursor.executescript('''
 conn.commit()
 
 @bot.event
-async def on_ready():
+async def setup():
     ticket_system = TicketSystem(bot)
     management_panel = ManagementPanel(bot)
     statuses = Statuses(bot)
@@ -59,6 +60,7 @@ async def on_ready():
     utilites = Utilites(bot)
     system = System(bot)
     invoice = Invoice(bot)
+    logging = Logging(bot)
 
     await bot.add_cog(ticket_system)
     await bot.add_cog(management_panel)
@@ -67,6 +69,7 @@ async def on_ready():
     await bot.add_cog(utilites)
     await bot.add_cog(system)
     await bot.add_cog(invoice)
+    await bot.add_cog(logging)
 
     statuses.update_schedule_embed.start()
 
