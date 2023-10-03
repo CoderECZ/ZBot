@@ -14,6 +14,7 @@ from cogs.utilities import Utilites
 from cogs.system import System
 from cogs.invoice import Invoice
 from cogs.logging import Logging
+from cogs.welcome import Welcome
 
 conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
@@ -61,6 +62,7 @@ async def setup():
     system = System(bot)
     invoice = Invoice(bot)
     logging = Logging(bot)
+    welcome = Welcome(bot)
 
     await bot.add_cog(ticket_system)
     await bot.add_cog(management_panel)
@@ -70,6 +72,7 @@ async def setup():
     await bot.add_cog(system)
     await bot.add_cog(invoice)
     await bot.add_cog(logging)
+    await bot.add_cog(welcome)
 
     statuses.update_schedule_embed.start()
 
