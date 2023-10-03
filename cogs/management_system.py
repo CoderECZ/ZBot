@@ -265,6 +265,29 @@ class ManagementPanel(commands.Cog):
         # Initialize an empty list to store certifications
         certifications = []
         
+        embed = discord.Embed(
+            title="Certifications",
+            description=f"> Web Developer\n"
+                        "*You can create and develop front-end and/or back-end on websites.*\n\n"
+                        f"> Server Configuration\n"
+                        "*You can configure servers fully on **BOTH** console and PC.*\n\n"
+                        f"> Mod Technician\n"
+                        "*You can configure advanced mods on PC such as traders, keyrooms and so forth.*\n\n"
+                        f"> JSON Creator\n"
+                        "*You can create custom map edits using DayZ Editor (DZE).*\n\n"
+                        f"> Map Developer\n"
+                        "*You can create, develop and script any part of a map - this does not include DZE.*\n\n"
+                        f"> 3D Modelling Engineer\n"
+                        "*You can do any of these: create models, apply textures, rigging, animations, scripting and importing.*\n\n"
+                        f"> Script Developer\n"
+                        "*You can create, develop or moderately edit scripts at any skill level as long as the outcome is intended.*\n\n"
+                        f"> Bot Developer\n"
+                        "*You can develop and code Discord Bots using discord.js and/or discord.py at an intermediate skill level.*\n\n"
+                        f"> Social Media Engineer\n"
+                        "*You can create visually stunning content such as posts, videos and images for advertisement.*",
+            colour=0x00ff00
+        )
+        
         def check(message):
             return message.author == ctx.author and isinstance(message.channel, discord.DMChannel)
         
@@ -286,7 +309,9 @@ class ManagementPanel(commands.Cog):
         r = await self.bot.wait_for("message", check=check, timeout=120)
         developerRank = r.content
         
-        await ctx.author.send("Enter the certifications one at a time. Type 'stop' to finish.")
+        await ctx.author.send("Enter the certifications one at a time.")
+        await ctx.author.send(embed=embed)
+        await ctx.author.send("Ensure you enter the certification exactly as it appears in the embed.\nType 'stop' when you are finished.")
         
         while True:
             # Wait for the user's response

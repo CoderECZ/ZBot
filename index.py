@@ -53,7 +53,7 @@ cursor.executescript('''
 conn.commit()
 
 @bot.event
-async def setup():
+async def on_ready():
     ticket_system = TicketSystem(bot)
     management_panel = ManagementPanel(bot)
     statuses = Statuses(bot)

@@ -1,0 +1,2 @@
+2023-10-03 21:21:09,609 - INFO - 2023-10-03 20:21:09 UTC - Command 'register_developer' invoked by lunafy in Coder'Z Expert'Z & Custom'Z#bot-commands
+2023-10-03 21:21:10,052 - INFO - 2023-10-03 20:21:10 UTC - Command 'register_developer' invoked by lunafy in Coder'Z Expert'Z & Custom'Z#bot-commands - Error: Command raised an exception: Forbidden: 403 Forbidden (error code: 50007): Cannot send messages to this user
