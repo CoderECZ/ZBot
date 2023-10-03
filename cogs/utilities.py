@@ -7,26 +7,24 @@ cursor = conn.cursor()
 class Utilites(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
-    SERVICE_TYPES = {
-        'a': 'Web Development',
-        'b': 'Server Configuration',
-        'c': 'Mod Configuration',
-        'd': 'JSON',
-        'e': 'Map Development',
-        'f': '3D Modelling/Texturing',
-        'g': 'Bot Development',
-        'h': 'Scripting',
-        'i': 'Catalog/Pre-made',
-        'x': 'Other',
-    }
-
-    GAMES = {
-        'a': 'DayZ',
-        'b': 'Arma',
-        'c': 'Discord',
-        'x': 'Other',
-    }
+        self.SERVICE_TYPES = {
+            'a': 'Web Development',
+            'b': 'Server Configuration',
+            'c': 'Mod Configuration',
+            'd': 'JSON',
+            'e': 'Map Development',
+            'f': '3D Modelling/Texturing',
+            'g': 'Bot Development',
+            'h': 'Scripting',
+            'i': 'Catalog/Pre-made',
+            'x': 'Other',
+        }
+        self.GAMES = {
+            'a': 'DayZ',
+            'b': 'Arma',
+            'c': 'Discord',
+            'x': 'Other',
+        }
     
     
     @classmethod
