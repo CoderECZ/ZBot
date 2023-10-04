@@ -7,7 +7,7 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 from cogs.ticket_system import TicketSystem
-from cogs.management_system import ManagementPanel
+from cogs.management_system import ManagementPanel # Clean up
 from cogs.statuses import Statuses
 from cogs.project_management import ProjectManagement
 from cogs.utilities import Utilites
@@ -15,6 +15,7 @@ from cogs.system import System
 from cogs.invoice import Invoice
 from cogs.logging import Logging
 from cogs.welcome import Welcome
+from cogs._reaction_roles import ReactionRoles
 
 conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
@@ -63,6 +64,7 @@ async def on_ready():
     invoice = Invoice(bot)
     logging = Logging(bot)
     welcome = Welcome(bot)
+    reactionRoles = ReactionRoles(bot)
 
     await bot.add_cog(ticket_system)
     await bot.add_cog(management_panel)
@@ -73,6 +75,7 @@ async def on_ready():
     await bot.add_cog(invoice)
     await bot.add_cog(logging)
     await bot.add_cog(welcome)
+    await bot.add_cog(reactionRoles)
 
     statuses.update_schedule_embed.start()
 
