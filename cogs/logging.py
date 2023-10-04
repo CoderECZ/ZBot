@@ -39,6 +39,30 @@ class Logging(commands.Cog):
 
         # Log to the file
         self.logger.info(log_message)
+    
+    def error(self, type: str = None, error: str = None, cog: str = None):
+        types = {"e": "Error", "w": "Warning", "i": "Information"}
+        
+        if type in types.keys():
+            if type in types.keys() == "e":
+                embed = discord.Embed(
+                    title="Error!",
+                    description=f"Something went wrong! Please refer this error to a technical administrator.",
+                    colour=0x00ff00
+                )
+                embed.set_footer("Code: e{}".format(cog))
+                embed.add_field(name="Error:", value=error, inline=True)
+                return embed
+            elif type in types.keys() == "w":
+                pass
+            elif type in types.keys() == "i":
+                pass
+            else:
+                pass
+        else:
+            message = "Error key not recognised."
+            return message
+            
 
     @commands.Cog.listener()
     async def on_command(self, ctx):

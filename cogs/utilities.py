@@ -1,7 +1,7 @@
 import discord, sqlite3, string
 from discord.ext import commands
 
-conn = sqlite3.connect("data/developers.db")
+conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
 
 class Utilites(commands.Cog):
