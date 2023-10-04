@@ -10,3 +10,5 @@
 2023-10-03 21:51:18,713 - INFO - 2023-10-03 20:51:18 UTC - Command 'register_developer' invoked by Luckypunck in Coder'Z Expert'Z & Custom'Z#bot-commands
 2023-10-03 21:51:28,806 - INFO - 2023-10-03 20:51:28 UTC - Command 'available' invoked by Luckypunck in Coder'Z Expert'Z & Custom'Z#bot-commands
 2023-10-03 21:53:19,553 - INFO - 2023-10-03 20:53:19 UTC - Command 'register_developer' invoked by Luckypunck in Coder'Z Expert'Z & Custom'Z#bot-commands - Error: Command raised an exception: TimeoutError: 
+2023-10-04 20:17:06,572 - INFO - 2023-10-04 19:17:06 UTC - Command 'unavailable' invoked by breathdev in Coder'Z Expert'Z & Custom'Z#bot-commands
+2023-10-04 20:17:21,241 - INFO - 2023-10-04 19:17:21 UTC - Command 'available' invoked by breathdev in Coder'Z Expert'Z & Custom'Z#bot-commands
