@@ -50,7 +50,7 @@ class EmailSender:
 
 
     class SendEmail:
-        def __init__(self, replacements, email_sender, to_email: str, clientName: str, productName: str, transactionID: str, html_file_path: str = "", subject: str = "CoderZ Legal Documentation", smtp_server: str = "", smtp_port: int = 587, sender_email: str = "", sender_password: str = ""):
+        def __init__(self, to_email: str, clientName: str, productName: str, transactionID: str):
             # Replace the placeholders with your SMTP server details and email credentials
             self.smtp_server = 'your_smtp_server.com'
             self.smtp_port = 587
@@ -59,10 +59,10 @@ class EmailSender:
             self.sender_password = 'your_email_password'
 
             # Create an instance of EmailSender
-            email_sender = EmailSender(smtp_server, smtp_port, sender_email, sender_password)
+            email_sender = EmailSender(self.smtp_server, self.smtp_port, self.sender_email, self.sender_password)
 
             # Replace these values with the recipient's email, subject, HTML file path, and replacement values
-            self.to_email = 'recipient@example.com'
+            self.to_email = to_email
             self.subject = 'CoderZ Legal Agreements'
             self.html_file_path = 'path/to/your/email_template.html'
             
@@ -76,4 +76,4 @@ class EmailSender:
             self.attachments = ['cogs/templates/documents/legal/TermsAndConditions.pdf', 'cogs/templates/documents/legal/PrivacyPolicy.pdf', 'cogs/templates/documents/legal/CustomerAgreement.pdf', 'cogs/templates/documents/legal/AcceptableUsagePolicy.pdf']
             
             # Send the email
-            email_sender.send_email(to_email, subject, html_file_path, replacements)
+            email_sender.send_email(self.to_email, self.subject, self.html_file_path, self.replacements, self.attachments)
