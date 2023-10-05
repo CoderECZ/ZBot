@@ -15,7 +15,7 @@ from cogs.system import System
 from cogs.invoice import Invoice
 from cogs.logging import Logging
 from cogs.welcome import Welcome
-from cogs._reaction_roles import ReactionRoles
+from cogs.reaction_roles import ReactionRoles
 
 conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()

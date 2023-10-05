@@ -8,6 +8,7 @@ class ReactionRoles(commands.Cog):
         self.server_id = 1088951646886842498 
         self.server = bot.get_guild(self.server_id)
         
+        # NOTE: Can have up to 20 reactions on one message
         reactionRoles = {
             "<:Swift:1159231251748769943>": discord.utils.get(self.server.roles, name="Swift"),
             "<:PHP:1159231250201063454>": discord.utils.get(self.server.roles, name="PHP"),
@@ -61,6 +62,8 @@ class ReactionRoles(commands.Cog):
             except discord.HTTPException as e:
                 await ctx.send(f"Could not add reactions: {e}")
 
+    # TODO: Add coding organiser role when they initially first react
+    # TODO: Remove reactions once function completed succesfully
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.Member):
         if user.bot:  # Ignore reactions from bots
