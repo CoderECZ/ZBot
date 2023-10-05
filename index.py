@@ -16,6 +16,7 @@ from cogs.invoice import Invoice
 from cogs.logging import Logging
 from cogs.welcome import Welcome
 from cogs.reaction_roles import ReactionRoles
+from cogs.chatgpt import ChatGPT
 
 conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
@@ -65,6 +66,7 @@ async def on_ready():
     logging = Logging(bot)
     welcome = Welcome(bot)
     reactionRoles = ReactionRoles(bot)
+    chatGPT = ChatGPT(bot)
 
     await bot.add_cog(ticket_system)
     await bot.add_cog(management_panel)
@@ -76,6 +78,7 @@ async def on_ready():
     await bot.add_cog(logging)
     await bot.add_cog(welcome)
     await bot.add_cog(reactionRoles)
+    await bot.add_cog(chatGPT)
 
     statuses.update_schedule_embed.start()
 

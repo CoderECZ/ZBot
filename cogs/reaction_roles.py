@@ -33,6 +33,7 @@ class ReactionRoles(commands.Cog):
         self.bot = bot
         self.reactions = reactionRoles
         self.reactionKeys = self.reactions.keys()
+        self.message = None
         
     @commands.command(name="admin_roles")
     @commands.has_permissions(manage_messages=True)
@@ -54,20 +55,20 @@ class ReactionRoles(commands.Cog):
             icon_url='https://cdn.discordapp.com/attachments/1114686704658423848/1157276152642146365/Picsart_23-09-17_19-07-53-355-removebg-preview.png?ex=651df3a7&is=651ca227&hm=ba913fbfa95aded5a1ef249cd7795d77e9f2087629b8dc9d3656736f065b6932&',
             text="CoderZ"
         )
-        message = await ctx.send(embed=embedLanguages)
+        self.message = await ctx.send(embed=embedLanguages)
 
         for key in self.reactionKeys:
             try:
-                await message.add_reaction(key)
+                await self.message.add_reaction(key)
             except discord.HTTPException as e:
                 await ctx.send(f"Could not add reactions: {e}")
 
-    # TODO: Add coding organiser role when they initially first react
-    # TODO: Remove reactions once function completed succesfully
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.Member):
         if user.bot:  # Ignore reactions from bots
             return
+
+        codeRole = discord.utils.get(self.server.roles, name="---------------- Coding ----------------")
 
         if str(reaction.emoji) in self.reactions:
             role = self.reactions[str(reaction.emoji)]
@@ -75,10 +76,16 @@ class ReactionRoles(commands.Cog):
             try:
                 if role in user.roles:
                     await user.remove_roles(role)
-                    print(f"Removed role {role.name} from {user.display_name}")
                 else:
                     await user.add_roles(role)
-                    print(f"Added role {role.name} to {user.display_name}")
+                    if codeRole not in user.roles:
+                        await user.add_roles(codeRole)
+                    else:
+                        pass
+
+                    # Remove all reactions from the message for the user
+                    await reaction.message.clear_reaction(reaction.emoji)
+                    
             except discord.HTTPException as e:
                 print(f"Failed to manage roles: {e}")
 
@@ -93,6 +100,9 @@ class ReactionRoles(commands.Cog):
             try:
                 if role in user.roles:
                     await user.remove_roles(role)
-                    print(f"Removed role {role.name} from {user.display_name}")
+
+                    # Remove all reactions from the message for the user
+                    await reaction.message.clear_reaction(reaction.emoji)
+                    
             except discord.HTTPException as e:
                 print(f"Failed to manage roles: {e}")
