@@ -1,8 +1,6 @@
 import discord
 from discord.ext import commands
 
-from cogs.logging import Logging
-
 class ReactionRoles(commands.Cog):
     def __init__(self, bot):
         self.server_id = 1088951646886842498 

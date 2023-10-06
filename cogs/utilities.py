@@ -204,3 +204,4 @@ class Utilites(commands.Cog):
 
         reference_number = self.encode(service_type, user_id, game, deadline, invoice_number)
         await ctx.author.send(f"Reference Number: {reference_number}")
+        

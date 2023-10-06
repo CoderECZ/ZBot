@@ -41,3 +41,4 @@
 2023-10-04 23:29:48,790 - INFO - 2023-10-04 22:29:48 UTC - Command 'admin_roles' invoked by breathdev in Coder'Z Expert'Z & Custom'Z#roles
 2023-10-05 13:13:58,087 - INFO - 2023-10-05 12:13:58 UTC - Command 'ask' invoked by breathdev in Coder'Z Expert'Z & Custom'Z#general-office
 2023-10-05 13:13:58,090 - INFO - 2023-10-05 12:13:58 UTC - Command 'ask' invoked by breathdev in Coder'Z Expert'Z & Custom'Z#general-office - Error: Command raised an exception: RateLimitError: You exceeded your current quota, please check your plan and billing details.
+2023-10-05 21:58:54,523 - INFO - 2023-10-05 20:58:54 UTC - Command 'register_developer' invoked by jimmy89 in Coder'Z Expert'Z & Custom'Z#bot-commands
