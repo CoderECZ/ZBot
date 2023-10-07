@@ -4,6 +4,8 @@ from discord.ext import commands
 conn = sqlite3.connect('data/coderz.db')
 cursor = conn.cursor()
 
+# This is not a test.
+
 from cogs.statuses import Statuses
 from cogs.ticket_system import TicketSystem
 
