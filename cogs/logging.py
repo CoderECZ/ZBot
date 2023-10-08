@@ -14,7 +14,7 @@ class Logging(commands.Cog):
         self.logger.setLevel(logging.INFO)
 
         # Create a file handler and set the formatter
-        log_file = 'C:/Users/kiera/Desktop/ZBot/logs/command_logs.log'
+        log_file = '/home/breath/repos/ZBot/logs/command_logs.log'
         file_handler = logging.FileHandler(log_file)
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)
