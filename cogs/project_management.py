@@ -10,6 +10,7 @@ from cogs.statuses import Statuses
 from cogs.ticket_system import TicketSystem
 
 class ProjectManagement(commands.Cog):
+    '''Commands for managing projects.'''
     def __init__(self, bot):
         self.bot = bot
         self.project_messages = {}

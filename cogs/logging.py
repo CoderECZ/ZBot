@@ -4,6 +4,7 @@ import logging
 from datetime import datetime
 
 class Logging(commands.Cog):
+    '''Logging commands and error detection commands.'''
     def __init__(self, bot):
         self.bot = bot
         self.setup_logging()

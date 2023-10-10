@@ -2,6 +2,7 @@ import discord, sqlite3
 from discord.ext import commands
 
 class TicketSystem(commands.Cog):
+    '''Commands for managing project tickets.'''
     def __init__(self, bot):
         self.bot = bot
 

@@ -8,6 +8,7 @@ with open('config.json', 'r') as f:
 openai.api_key = config['openaiapi']
 
 class ChatGPT(commands.Cog):
+    '''Chat GPT commands.'''
     def __init__(self, bot):
         self.bot = bot
 

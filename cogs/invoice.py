@@ -8,6 +8,7 @@ conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
 
 class Invoice(commands.Cog):
+    '''Invoice formatting and saving to the projects database.'''
     def __init__(self, bot):
         self.bot = bot
     

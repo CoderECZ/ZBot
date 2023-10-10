@@ -9,6 +9,7 @@ cursor = conn.cursor()
 global server_id
 
 class Statuses(commands.Cog):
+    '''Commands for managing the status of the developers in the server.'''
     def __init__(self, bot):
         self.bot = bot
         self.schedule_channel_id = 1154179596682543125

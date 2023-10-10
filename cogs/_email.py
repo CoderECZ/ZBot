@@ -4,6 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 
 class EmailSender:
+    '''Manages email communications with clients and developers.'''
     def __init__(self, smtp_server, smtp_port, sender_email, sender_password):
         self.smtp_server = smtp_server
         self.smtp_port = smtp_port

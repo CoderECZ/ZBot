@@ -5,6 +5,7 @@ conn = sqlite3.connect("data/coderz.biz")
 cursor = conn.cursor()
 
 class Payment(commands.Cog):
+    '''Handles the payment of developer payments when a project is completed.'''
     def __init__(self, bot):
         self.bot = bot
     

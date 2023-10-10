@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 class ReactionRoles(commands.Cog):
+    '''Commands related to the reaction roles.'''
     def __init__(self, bot):
         self.server_id = 1088951646886842498 
         self.server = bot.get_guild(self.server_id)

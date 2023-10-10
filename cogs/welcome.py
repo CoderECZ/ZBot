@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 class Welcome(commands.Cog):
+    '''Welcome command and functions.'''
     def __init__(self, bot):
         self.bot = bot
         self.welcome_channel_id = 1158811277813108817

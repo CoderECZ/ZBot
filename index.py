@@ -7,7 +7,7 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 from cogs.ticket_system import TicketSystem
-from cogs.management_system import ManagementPanel # Clean up
+from cogs.management_system import ManagementPanel
 from cogs.statuses import Statuses
 from cogs.project_management import ProjectManagement
 from cogs.utilities import Utilites
@@ -89,7 +89,12 @@ async def on_ready():
 async def on_message(message):
     await bot.process_commands(message)
 
-with open('config.json', 'r') as f:
+with open('config.json', 'r+') as f:
     config = json.load(f)
-
-bot.run(config['botkey'])
+    if config['botkey'] == "":
+        config['botkey'] = input("Please enter your bot key: ")
+        bot.run(config['botkey'])
+        with open('config.json', 'w+') as f:
+            json.dump(config, f, indent=4)
+    else:
+        bot.run(config['botkey'])

@@ -3,6 +3,7 @@ from discord.ext import commands
 import subprocess as sp
 
 class System(commands.Cog):
+    '''System commands for managing the bot.'''
     def __init__(self, bot):
         self.bot = bot
     
