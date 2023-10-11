@@ -3,9 +3,7 @@ from discord.ext import commands
 
 from cogs.utilities import Utilites
 from cogs.statuses import Statuses
-
-conn = sqlite3.connect("data/coderz.db")
-cursor = conn.cursor()
+from cogs.database import Database
 
 class ManagementPanel(commands.Cog):
     '''Management panel commands'''
@@ -77,13 +75,11 @@ class ManagementPanel(commands.Cog):
                         pass
                     
                     try:
-                        cursor.execute('''
+                        Database.insert('''
                             UPDATE developers
                             SET developer_rank = ?
                             WHERE user_id = ?
                         ''', (rankMsg, userID))
-                        
-                        conn.commit()
                     except Exception as e:
                         await ctx.author.send("Failed to save information to database.")
                         print(f"Error saving information to database: {e}")
@@ -107,13 +103,12 @@ class ManagementPanel(commands.Cog):
     
     async def AdjustCertifications(self, ctx, userID: int, member: object):
         try:
-            cursor.execute('''
+            developerData = Database.fetch(query='''
                 SELECT developer_name, developer_rank
                 FROM developers
                 WHERE user_id = ?
-            ''', (userID,))
+            ''', data=(userID,), fetchone=True)
             
-            developerData = cursor.fetchone()
             developerRoles = Utilites.get_certified_roles(userID)
         except Exception as e:
             print(f"Failed to fetch data: {e}")
@@ -183,11 +178,11 @@ class ManagementPanel(commands.Cog):
                                 break
                             finally:
                                 try:
-                                    cursor.execute('''
+                                    Database.insert(query='''
                                         UPDATE developers
                                         SET status = ?
                                         WHERE user_id = ?
-                                    ''', (r.content.lower(), userID))
+                                    ''', data=(r.content.lower(), userID))
                                     
                                     conn.commit()
                                     
@@ -225,8 +220,7 @@ class ManagementPanel(commands.Cog):
                         await ctx.author.send("Invalid input detected.")
                         break
         try:
-            cursor.execute("SELECT status FROM developers WHERE user_id=?", (userID,))
-            currentStatus = cursor.fetchone()
+            currentStatus = Database.fetch(query="SELECT status FROM developers WHERE user_id=?", data=(userID,), fetchone=True)
             if currentStatus:
                 if currentStatus[0].lower() == "onBreak":
                     currentStatusU = "On Break"
@@ -322,12 +316,11 @@ class ManagementPanel(commands.Cog):
             
             # Insert certifications into the certified_roles table
             for certification in certifications:
-                cursor.execute('''
+                Database.insert(query='''
                     INSERT INTO certified_roles (developer_id, role_name)
                     VALUES (?, ?)
-                ''', (developer_id, certification))
-            
-            conn.commit()
+                ''', data=(developer_id, certification)
+                )
             await ctx.author.send(f"Developer {developerName} ({userID}) has been registered with rank {developerRank} and certifications: {', '.join(certifications)}")
         except sqlite3.Error as e:
             ctx.author.send("Error saving information to the database.")
