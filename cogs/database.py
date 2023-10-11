@@ -35,7 +35,6 @@ class Database:
                     return err
                 finally:
                     self.cursor.commit()
-                    self.cursor.close()
             elif fetchall is True:
                 try:
                     self.cursor.execute(query)
@@ -44,7 +43,6 @@ class Database:
                     return err
                 finally:
                     self.cursor.commit()
-                    self.cursor.close()
         else:
             try:
                 self.cursor.execute(query)
@@ -53,5 +51,11 @@ class Database:
                 return err
             finally:
                 self.cursor.commit()
-                self.cursor.close()
-        
+    
+    def insert(self, query, data):
+        try:
+            self.cursor.execute(query, data)
+        except mysql.connector.Error as err:
+            return err
+        finally:
+            self.cursor.commit()

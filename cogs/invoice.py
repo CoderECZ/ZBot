@@ -3,9 +3,7 @@ from discord.ext import commands
 
 from cogs.utilities import Utilites
 from cogs.project_management import ProjectManagement
-
-conn = sqlite3.connect("data/coderz.db")
-cursor = conn.cursor()
+from cogs.database import Database
 
 class Invoice(commands.Cog):
     '''Invoice formatting and saving to the projects database.'''
@@ -33,7 +31,7 @@ class Invoice(commands.Cog):
                 elif refData['Service Type'] in ['Bot Development', 'Web Development', 'Scripting']:
                     developer_payment = item_unit_amount * 0.55 - (item_unit_amount * (3 / 100))
                     
-                cursor.execute('''
+                Database.insert('''
                     INSERT INTO projects (project_id, game, project_details, developer_payment, deadline, status, assigned_to, client)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 ''', (data["Invoice Number"], refData['Game'], item_description, float(developer_payment), refData['Deadline'], "Unassigned", None, int(refData['Discord ID'])))
