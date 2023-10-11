@@ -1,11 +1,6 @@
-import discord
+import discord, json, sqlite3
 from discord.ext import commands
-import sqlite3
-import json
-
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="!", intents=intents)
-
+# Cogs
 from cogs.ticket_system import TicketSystem
 from cogs.management_system import ManagementPanel
 from cogs.statuses import Statuses
@@ -17,6 +12,9 @@ from cogs.logging import Logging
 from cogs.welcome import Welcome
 from cogs.reaction_roles import ReactionRoles
 from cogs.chatgpt import ChatGPT
+
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
@@ -56,31 +54,19 @@ conn.commit()
 
 @bot.event
 async def on_ready():
-    ticket_system = TicketSystem(bot)
-    management_panel = ManagementPanel(bot)
-    statuses = Statuses(bot)
-    project_management = ProjectManagement(bot)
-    utilites = Utilites(bot)
-    system = System(bot)
-    invoice = Invoice(bot)
-    logging = Logging(bot)
-    welcome = Welcome(bot)
-    reactionRoles = ReactionRoles(bot)
-    chatGPT = ChatGPT(bot)
+    await bot.add_cog(TicketSystem(bot))
+    await bot.add_cog(ManagementPanel(bot))
+    await bot.add_cog(Statuses(bot))
+    await bot.add_cog(ProjectManagement(bot))
+    await bot.add_cog(Utilites(bot))
+    await bot.add_cog(System(bot))
+    await bot.add_cog(Invoice(bot))
+    await bot.add_cog(Logging(bot))
+    await bot.add_cog(Welcome(bot))
+    await bot.add_cog(ReactionRoles(bot))
+    await bot.add_cog(ChatGPT(bot))
 
-    await bot.add_cog(ticket_system)
-    await bot.add_cog(management_panel)
-    await bot.add_cog(statuses)
-    await bot.add_cog(project_management)
-    await bot.add_cog(utilites)
-    await bot.add_cog(system)
-    await bot.add_cog(invoice)
-    await bot.add_cog(logging)
-    await bot.add_cog(welcome)
-    await bot.add_cog(reactionRoles)
-    await bot.add_cog(chatGPT)
-
-    statuses.update_schedule_embed.start()
+    Statuses.update_schedule_embed.start()
 
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="CoderZ code!"))
     print(f'Logged in as {bot.user.name}')
