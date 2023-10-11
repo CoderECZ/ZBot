@@ -11,7 +11,7 @@ with open('config.json', 'r') as f:
     }
 
 class Database:
-    def __init__(self, database, connection, cursor):
+    def __init__(self):
         self.database = db_config
         self.connection = mysql.connector.connect(**self.database)
         self.cursor = self.connection.cursor()
