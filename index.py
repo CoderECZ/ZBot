@@ -17,12 +17,14 @@ from cogs.chatgpt import ChatGPT
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-db_config = {
-    'host': 'your_database_host',
-    'user': 'your_database_user',
-    'password': 'your_database_password',
-    'database': 'your_database_name',
-}
+with open('config.json', 'r') as f:
+    config = json.load(f)
+    db_config = {
+        'host': config['database']['host'],
+        'user': config['database']['user'],
+        'password': config['database']['password'],
+        'database': config['database']['database'],
+    }
 
 @bot.event
 async def on_ready():
