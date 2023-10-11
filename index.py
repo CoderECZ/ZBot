@@ -1,4 +1,5 @@
-import discord, json, sqlite3
+import discord, json
+import mysql.connector as mysql
 from discord.ext import commands
 # Cogs
 from cogs.ticket_system import TicketSystem
@@ -16,41 +17,12 @@ from cogs.chatgpt import ChatGPT
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-conn = sqlite3.connect("data/coderz.db")
-cursor = conn.cursor()
-
-cursor.executescript('''
-    BEGIN;
-    CREATE TABLE IF NOT EXISTS developers (
-        user_id INTEGER PRIMARY KEY,
-        developer_name TEXT,
-        developer_rank TEXT,
-        status TEXT
-    );
-    CREATE TABLE IF NOT EXISTS certified_roles (
-        developer_id INTEGER,
-        role_name TEXT,
-        FOREIGN KEY (developer_id) REFERENCES developers (user_id)
-    );
-    CREATE TABLE IF NOT EXISTS projects (
-        project_id TEXT PRIMARY KEY,
-        game TEXT,
-        project_details TEXT,
-        developer_payment REAL,
-        deadline TEXT,
-        status TEXT,
-        assigned_to INTEGER,
-        client INTEGER
-    );
-    CREATE TABLE IF NOT EXISTS completed_projects (
-        developer_id INTEGER PRIMARY KEY,
-        project_id TEXT,
-        developer_payment REAL
-    );
-    COMMIT;
-''')
-
-conn.commit()
+db_config = {
+    'host': 'your_database_host',
+    'user': 'your_database_user',
+    'password': 'your_database_password',
+    'database': 'your_database_name',
+}
 
 @bot.event
 async def on_ready():

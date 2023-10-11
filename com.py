@@ -1,9 +1,10 @@
 import pika
-import 
+from cogs.invoice import Invoice
 
 def callback(ch, method, properties, body):
     '''Callback function for incoming messages.'''
     
+    Invoice.saveInvoice(data=body)
     print(f"Received message: {body}")
 
 # Establish connection to RabbitMQ
