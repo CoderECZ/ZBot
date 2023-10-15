@@ -184,8 +184,6 @@ class ManagementPanel(commands.Cog):
                                         WHERE user_id = ?
                                     ''', data=(r.content.lower(), userID))
                                     
-                                    conn.commit()
-                                    
                                     await ctx.author.send("Status succesfully set on developer.")
                                     await member.remove_roles(currentStatusObj)
                                     break
