@@ -1,4 +1,4 @@
-import discord, sqlite3
+import discord
 from discord.ext import commands
 
 from cogs.utilities import Utilites
@@ -189,7 +189,7 @@ class ManagementPanel(commands.Cog):
                                     await ctx.author.send("Status succesfully set on developer.")
                                     await member.remove_roles(currentStatusObj)
                                     break
-                                except sqlite3.Error as e:
+                                except Exception as e:
                                     await ctx.author.send("Failed to save information to database.")
                                     print(f"Error setting information in database: {e}")
                                     break
@@ -307,12 +307,12 @@ class ManagementPanel(commands.Cog):
             certifications.append(r.content)
         
         try:
-            cursor.execute('''
+            Database.insert(query='''
                 INSERT INTO developers (user_id, developer_name, developer_rank, status)
                 VALUES (?, ?, ?, ?)
-            ''', (userID, developerName, developerRank, "available"))
+            ''', data=(userID, developerName, developerRank, "available"))
             
-            developer_id = cursor.lastrowid  # Get the ID of the inserted developer
+            developer_id = Database.getLastRowId() # Get the ID of the inserted developer
             
             # Insert certifications into the certified_roles table
             for certification in certifications:
@@ -322,7 +322,7 @@ class ManagementPanel(commands.Cog):
                 ''', data=(developer_id, certification)
                 )
             await ctx.author.send(f"Developer {developerName} ({userID}) has been registered with rank {developerRank} and certifications: {', '.join(certifications)}")
-        except sqlite3.Error as e:
+        except Exception as e:
             ctx.author.send("Error saving information to the database.")
             print(f"Error saving data to DB: {e}")
             
@@ -336,13 +336,11 @@ class ManagementPanel(commands.Cog):
         def check(message):
             return message.author == ctx.author and isinstance(message.channel, discord.DMChannel)
         
-        cursor.execute('''
-                SELECT developer_name, developer_rank
-                FROM developers
-                WHERE user_id = ?
-            ''', (userID,))
-            
-        developerData = cursor.fetchone()
+        developerData = Database.fetch(query='''
+                                        SELECT developer_name, developer_rank
+                                        FROM developers
+                                        WHERE user_id = ?
+                                    ''', data=(userID,), fetchone=True)
         
         qEmbed = discord.Embed(
             title=f"Managing {developerData[0]}",
