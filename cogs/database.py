@@ -59,6 +59,11 @@ class Database:
         finally:
             self.cursor.commit()
             
-            # Going to cut time in half when doing DB transactions using these functions
-            # ALSO is alot safer - might integrate an argument check function to make sure that the query is valid compared to the function they called making the code a lot
-            # more safe. CBA for the DB to be corrupted or keep messing up.
+    def getLastRowId(self):
+        try:
+            self.cursor.execute("SELECT LAST_INSERT_ID()")
+            return self.cursor.fetchone()[0]
+        except mysql.connector.Error as err:
+            return err
+        finally:
+            self.cursor.commit()
