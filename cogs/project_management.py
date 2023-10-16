@@ -8,6 +8,7 @@ cursor = conn.cursor()
 
 from cogs.statuses import Statuses
 from cogs.ticket_system import TicketSystem
+from cogs.database import Database
 
 class ProjectManagement(commands.Cog):
     '''Commands for managing projects.'''
@@ -40,12 +41,10 @@ class ProjectManagement(commands.Cog):
         clientID = await self.bot.wait_for("message", check=check, timeout=120)
 
         # Insert the project into the database
-        cursor.execute('''
+        Database.insert(query='''
             INSERT INTO projects (project_id, game, project_details, developer_payment, deadline, status, assigned_to, client)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (project_no, game.content, project_details.content, float(developer_payment.content), deadline.content, "Unassigned", None, int(clientID)))
-        
-        conn.commit()
+        ''', data=(project_no, game.content, project_details.content, float(developer_payment.content), deadline.content, "Unassigned", None, int(clientID)))
 
         # Send an embed to the specified channel with project details
         project_id = cursor.lastrowid  # Get the ID of the inserted project
@@ -54,32 +53,28 @@ class ProjectManagement(commands.Cog):
     @commands.command(name="claim_project")
     async def claim_project(self, ctx, project_id: int):
         # Check if the project is already claimed
-        cursor.execute('''
-            SELECT assigned_to
-            FROM projects
-            WHERE project_id = ? AND status = 'Unassigned'
-        ''', (project_id,))
-        
-        data = cursor.fetchone()
+        data = Database.fetch(query='''
+                SELECT assigned_to
+                FROM projects
+                WHERE project_id = ? AND status = 'Unassigned'
+            ''', data=(project_id,), fetchone=True)
         
         if data:
             assigned_to = data[0]
             if assigned_to is None:
                 # Mark the project as claimed
-                cursor.execute('''
+                Database.query(query='''
                     UPDATE projects
                     SET assigned_to = ?
                     WHERE project_id = ?
-                ''', (ctx.author.id, project_id))
+                ''', data=(ctx.author.id, project_id))
                 
                 # Update the project status to 'In Progress'
-                cursor.execute('''
+                Database.query(query='''
                     UPDATE projects
                     SET status = 'In Progress'
                     WHERE project_id = ?
-                ''', (project_id,))
-                
-                conn.commit()
+                ''', data=(project_id,))
                 
                 await self.send_project_embed(ctx, project_id)
                 
@@ -95,13 +90,11 @@ class ProjectManagement(commands.Cog):
 
     @classmethod
     async def send_project_embed(self, ctx, project_id):
-        cursor.execute('''
-            SELECT game, project_details, developer_payment, deadline, status, assigned_to, client
-            FROM projects
-            WHERE project_id = ?
-        ''', (project_id,))
-        
-        project_data = cursor.fetchone()
+        project_data = Database.fetch(query='''
+                            SELECT game, project_details, developer_payment, deadline, status, assigned_to, client
+                            FROM projects
+                            WHERE project_id = ?
+                        ''', data=(project_id,), fetchone=True)
 
         if project_data:
             game, project_details, developer_payment, deadline, status, assigned_to, client = project_data
@@ -143,34 +136,28 @@ class ProjectManagement(commands.Cog):
     @commands.command(name="complete_project")
     async def complete_project(self, ctx, project_id: int):
         # Check if the project is assigned to the developer
-        cursor.execute('''
-            SELECT assigned_to, developer_payment
-            FROM projects
-            WHERE project_id = ? AND assigned_to = ?
-        ''', (project_id, ctx.author.id))
-        
-        data = cursor.fetchone()
+        data = Database.fetch(query='''
+                    SELECT assigned_to, developer_payment
+                    FROM projects
+                    WHERE project_id = ? AND assigned_to = ?
+                ''', data=(project_id, ctx.author.id), fetchone=True)
         
         if data:
             assigned_to, developer_payment = data
             
             if assigned_to is not None:
                 # Update the project status to 'Completed'
-                cursor.execute('''
+                Database.query(query='''
                     UPDATE projects
                     SET status = 'Completed'
                     WHERE project_id = ?
-                ''', (project_id,))
-                
-                conn.commit()
+                ''', data=(project_id,))
                 
                 # Record the completed project for the developer
-                cursor.execute('''
+                Database.insert(query='''
                     INSERT INTO completed_projects (developer_id, project_id, developer_payment)
                     VALUES (?, ?, ?)
-                ''', (ctx.author.id, project_id, developer_payment))
-                
-                conn.commit()
+                ''', data=(ctx.author.id, project_id, developer_payment))
                 
                 await self.send_project_embed(ctx, project_id)
                 
