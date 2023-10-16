@@ -1,5 +1,7 @@
-import discord, sqlite3, string
+import discord, string
 from discord.ext import commands
+
+from cogs.database import Database
 
 conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
@@ -48,11 +50,10 @@ class Utilites(commands.Cog):
         '''
         Adds a certified role to a user based of their User ID (Developer ID) and the certification name (Discord Certification Role name.)
         '''
-        cursor.execute('''
+        Database.insert(query='''
             INSERT INTO certified_roles (developer_id, role_name)
             VALUES (?, ?)
-        ''', (developer_id, role_name))
-        conn.commit()
+        ''', data=(developer_id, role_name))
 
     # Define a function to get the certified roles for a developer
     # developer_id is the user's ID for whom you want to retrieve certified roles
@@ -61,12 +62,12 @@ class Utilites(commands.Cog):
         '''
         Gets all of the users certified roles from the database based of their User ID (Developer ID).
         '''
-        cursor.execute('''
-            SELECT role_name
-            FROM certified_roles
-            WHERE developer_id = ?
-        ''', (developer_id,))
-        return [row[0] for row in cursor.fetchall()]
+        data = Database.fetch(query='''
+                    SELECT role_name
+                    FROM certified_roles
+                    WHERE developer_id = ?
+                ''', data=(developer_id,), fetchall=True)
+        return [row[0] for row in data]
     
     @classmethod
     def remove_certified_role(self, developer_id, role_name):
@@ -78,11 +79,10 @@ class Utilites(commands.Cog):
         lowercase_role_name = role_name.lower()
         if lowercase_role_name in [cert.lower() for cert in developerRoles]:
             # Remove the role_name from the database
-            cursor.execute('''
+            Database.query(query='''
                 DELETE FROM certified_roles
                 WHERE developer_id = ? AND LOWER(role_name) = ?
-            ''', (developer_id, lowercase_role_name))
-            conn.commit()
+            ''', data=(developer_id, lowercase_role_name))
     
     async def rolesF(self, server):
         '''A list of all of the ranks, certifications and statuses within the server.'''
