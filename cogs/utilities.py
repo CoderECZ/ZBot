@@ -3,9 +3,6 @@ from discord.ext import commands
 
 from cogs.database import Database
 
-conn = sqlite3.connect("data/coderz.db")
-cursor = conn.cursor()
-
 class Utilites(commands.Cog):
     '''Utility commands and functions for general upkeeping.'''
     def __init__(self, bot):
