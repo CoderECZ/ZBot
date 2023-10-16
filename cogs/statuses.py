@@ -1,11 +1,8 @@
-import discord, sqlite3
+import discord
 from discord.ext import commands, tasks
 
 from cogs.utilities import Utilites
 from cogs.database import Database
-
-conn = sqlite3.connect("data/coderz.db")
-cursor = conn.cursor()
 
 global server_id
 
@@ -178,7 +175,6 @@ class Statuses(commands.Cog):
                         WHERE user_id = ?
                     ''', data=("unavailable", ctx.author.id))
                 
-                conn.commit()
         else:
             await ctx.author.send("You are not registered as a developer. Please use the `register_developer` command first.")
 
@@ -218,7 +214,6 @@ class Statuses(commands.Cog):
                     WHERE user_id = ?
                 ''', data=("onBreak", ctx.author.id))
                 
-                conn.commit()
         else:
             await ctx.author.send("You are not registered as a developer. Please use the `register_developer` command first.")
     
@@ -255,6 +250,5 @@ class Statuses(commands.Cog):
                         WHERE user_id = ?
                     ''', data=("busy", userID))
                 
-                conn.commit()
         else:
             print("Unable to complete action.")

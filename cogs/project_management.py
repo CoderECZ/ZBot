@@ -1,8 +1,5 @@
-import discord, sqlite3
+import discord
 from discord.ext import commands
-
-conn = sqlite3.connect('data/coderz.db')
-cursor = conn.cursor()
 
 # This is not a test.
 
@@ -47,7 +44,7 @@ class ProjectManagement(commands.Cog):
         ''', data=(project_no, game.content, project_details.content, float(developer_payment.content), deadline.content, "Unassigned", None, int(clientID)))
 
         # Send an embed to the specified channel with project details
-        project_id = cursor.lastrowid  # Get the ID of the inserted project
+        project_id = Database.getLastRowId()  # Get the ID of the inserted project
         await self.send_project_embed(ctx, project_id)
 
     @commands.command(name="claim_project")

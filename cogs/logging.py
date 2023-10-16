@@ -22,6 +22,14 @@ class Logging(commands.Cog):
 
         # Add the file handler to the logger
         self.logger.addHandler(file_handler)
+        
+    @commands.command(name="get_logs", hidden=True)
+    async def get_logs(self, ctx):
+        """
+        Get the logs from the command logger.
+        """
+        with open('/home/breath/repos/ZBot/logs/command_logs.log', 'r') as f:
+            await ctx.send(f"```\n{f.read()}\n```")
 
     async def log_command(self, ctx, error=None):
         """

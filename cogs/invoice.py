@@ -1,4 +1,4 @@
-import discord, sqlite3, json, requests
+import discord
 from discord.ext import commands
 
 from cogs.utilities import Utilites
