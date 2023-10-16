@@ -111,8 +111,7 @@ class Statuses(commands.Cog):
         unavailable_role = discord.utils.get(self.server.roles, name="Unavailable")
         onBreak_role = discord.utils.get(self.server.roles, name="On Break")
         
-        cursor.execute("SELECT status FROM developers WHERE user_id=?", (ctx.author.id,))
-        status_tuple = cursor.fetchone()  # Fetch the status from the database
+        status_tuple = Database.fetch(query="SELECT status FROM developers WHERE user_id=?", data=(ctx.author.id,), fetchone=True)
         
         if status_tuple:
             status = status_tuple[0]  # Extract the status from the tuple
@@ -134,13 +133,12 @@ class Statuses(commands.Cog):
                     
                 await ctx.author.send("Your status has been updated to available.")
                 
-                cursor.execute('''
+                Database.query(query='''
                     UPDATE developers
                     SET status = ?
                     WHERE user_id = ?
-                ''', ("available", ctx.author.id))
+                ''', data=("available", ctx.author.id))
                 
-                conn.commit()
         else:
             await ctx.author.send("You are not registered as a developer. Please use the `register_developer` command first.")
 
@@ -152,8 +150,7 @@ class Statuses(commands.Cog):
         unavailable_role = discord.utils.get(self.server.roles, name="Unavailable")
         onBreak_role = discord.utils.get(self.server.roles, name="On Break")
         
-        cursor.execute("SELECT status FROM developers WHERE user_id=?", (ctx.author.id,))
-        status_tuple = cursor.fetchone()  # Fetch the status from the database
+        status_tuple = Database.fetch(query="SELECT status FROM developers WHERE user_id=?", data=(ctx.author.id,), fetchone=True)
         
         if status_tuple:
             status = status_tuple[0]  # Extract the status from the tuple
@@ -175,11 +172,11 @@ class Statuses(commands.Cog):
                     
                 await ctx.author.send("Your status has been updated to unavailable.")
                 
-                cursor.execute('''
-                    UPDATE developers
-                    SET status = ?
-                    WHERE user_id = ?
-                ''', ("unavailable", ctx.author.id))
+                Database.query(query='''
+                        UPDATE developers
+                        SET status = ?
+                        WHERE user_id = ?
+                    ''', data=("unavailable", ctx.author.id))
                 
                 conn.commit()
         else:
@@ -193,8 +190,7 @@ class Statuses(commands.Cog):
         unavailable_role = discord.utils.get(self.server.roles, name="Unavailable")
         onBreak_role = discord.utils.get(self.server.roles, name="On Break")
         
-        cursor.execute("SELECT status FROM developers WHERE user_id=?", (ctx.author.id,))
-        status_tuple = cursor.fetchone()  # Fetch the status from the database
+        status_tuple = Database.fetch(query="SELECT status FROM developers WHERE user_id=?", data=(ctx.author.id,), fetchone=True)
         
         if status_tuple:
             status = status_tuple[0]  # Extract the status from the tuple
@@ -216,11 +212,11 @@ class Statuses(commands.Cog):
                     
                 await ctx.author.send("Your status has been updated to on break.")
                 
-                cursor.execute('''
+                Database.query(query='''
                     UPDATE developers
                     SET status = ?
                     WHERE user_id = ?
-                ''', ("onbreak", ctx.author.id))
+                ''', data=("onBreak", ctx.author.id))
                 
                 conn.commit()
         else:
@@ -234,8 +230,7 @@ class Statuses(commands.Cog):
         onBreak_role = discord.utils.get(self.server.roles, name="On Break")
         busy_role = discord.utils.get(self.server.roles, name="Busy")
         
-        cursor.execute("SELECT status FROM developers WHERE user_id=?", (userID,))
-        status_tuple = cursor.fetchone()  # Fetch the status from the database
+        status_tuple = Database.fetch(query="SELECT status FROM developers WHERE user_id=?", data=(userID,), fetchone=True)
         
         if status_tuple:
             status = status_tuple[0]  # Extract the status from the tuple
@@ -254,11 +249,11 @@ class Statuses(commands.Cog):
                 except Exception as e:
                     print(f"Failed to add role to user: {e}")
                 
-                cursor.execute('''
-                    UPDATE developers
-                    SET status = ?
-                    WHERE user_id = ?
-                ''', ("busy", userID))
+                Database.query(query='''
+                        UPDATE developers
+                        SET status = ?
+                        WHERE user_id = ?
+                    ''', data=("busy", userID))
                 
                 conn.commit()
         else:
