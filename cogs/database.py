@@ -36,8 +36,12 @@ class Database:
                     self.cursor.commit()
             elif fetchall is True:
                 try:
-                    self.cursor.execute(query, data)
-                    return self.cursor.fetchall()
+                    if data is not None:
+                        self.cursor.execute(query, data)
+                        return self.cursor.fetchall()
+                    elif data is None:
+                        self.cursor.execute(query)
+                        return self.cursor.fetchall()
                 except mysql.connector.Error as err:
                     return err
                 finally:

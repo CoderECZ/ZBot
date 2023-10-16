@@ -2,6 +2,7 @@ import discord, sqlite3
 from discord.ext import commands, tasks
 
 from cogs.utilities import Utilites
+from cogs.database import Database
 
 conn = sqlite3.connect("data/coderz.db")
 cursor = conn.cursor()
@@ -22,11 +23,10 @@ class Statuses(commands.Cog):
         Creates the scheduled embed in the appropriate channel.
         '''
         # Get a list of developers and their statuses
-        cursor.execute('''
-            SELECT user_id, status
-            FROM developers
-        ''')
-        developer_statuses = cursor.fetchall()
+        developer_statuses = Database.fetch(query='''
+                                                SELECT user_id, status
+                                                FROM developers
+                                            ''', fetchall=True)
 
         embed = discord.Embed(
             title="📅 Schedule 📅",
